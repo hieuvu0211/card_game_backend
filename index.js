@@ -150,6 +150,46 @@ app.get('/getallskingroups', (_req, res) => {
     })
 })
 
+//create new skin group
+app.post('/addnewskingroup', (req, res) => {
+    const sql = 'insert into skin_groups(skin_group_name) values(?)';
+    db.query(sql, [req.body.skin_group_name], (err, _data) => {
+        if(err) {
+            return res.status(400).json({
+                msg : "failed to create new skin_group"
+            })
+        }
+        return res.json({
+            msg: "ok"
+        })
+    });
+});
+
+//update name skin group
+app.put('/updateskingroup/:id', (req, res) => {
+    const sql = 'update skin_groups set skin_group_name=? where skin_group_id=?';
+    const info = [
+        req.body.skin_group_name,
+        req.params.id
+    ]
+    db.query(sql, [...info], (err, _data) => {
+        if(err){
+            return res.status(400).json({msg:"failed"})
+        }
+        return res.json({msg:"ok, updated"})
+    })
+});
+
+//delete skin group
+app.delete('/deleteskingroup/:id', (req, res) => {
+    const sql = "delete from skin_groups where skin_group_id=?";
+    db.query(sql, [req.params.id], (err, _data) => {
+        if(err) {
+            return res.status(400).json({msg:"failed"})
+        }
+        return res.json({msg: "ok deleted"})
+    })
+})
 //----------------------------------------------------------------------------------------------
 //get all skin
 app.get('/getallskins', (_req, res) => {
@@ -214,6 +254,56 @@ app.delete('/skindelete/:id', (req, res) => {
     })
 })
 //----------------------------------------------------------------------------------------------
+//add new skin_user
+app.post('/addnewskinuser', (req, res) => {
+    const sql = "insert into skin_user(skin_id, player_id, skin_user_expried) values(?)";
+    const info = [
+        req.body.skin_id,
+        req.body.player_id,
+        req.body.skin_user_expried
+    ]
+    db.query(sql, [info], (err, _data) => {
+        if(err) {
+            return res.status(400).json({
+                msg: "failed to create"
+            })
+        }
+        return res.json({msg: "ok, created"});
+    })
+})
+
+//update skin_user
+app.put('/addnewskinuser/:id', (req, res) => {
+    const sql = "update skin_user set skin_id=?, player_id=?, skin_user_expried=? where skin_user_id=?";
+    const info = [
+        req.body.skin_id,
+        req.body.player_id,
+        req.body.skin_user_expried,
+        req.params.id
+    ]
+    db.query(sql, [...info], (err, _data) => {
+        if(err) {
+            return res.status(400).json({
+                msg: "failed to update"
+            })
+        }
+        return res.json({msg: "ok, updated"});
+    })
+})
+
+//delete skin_user row
+app.delete('/deleteskinuser/:id', (req, res) => {
+    console.log(req.params.id)
+    const sql = "delete from skin_user where skin_id=?";
+    db.query(sql, [req.params.id], (err, _data) => {
+        if(err) {
+            return res.status(400).json({
+                msg: "cannot delete skin_user in database"
+            })
+        }
+        return res.json({msg: "ok,deleted"});
+    })
+})
 
 server.listen(8080, () => {
   console.log('server running at http://localhost:8080');

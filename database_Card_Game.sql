@@ -11,7 +11,7 @@ drop table if exists Skin_User;
 #1
 create table Players (
     player_id int primary key auto_increment,
-    username nvarchar(255) not null,
+    username nvarchar(255) not null unique,
     password nvarchar(255) not null,
     score int default 0,
     elo int default 0,
@@ -44,6 +44,7 @@ create table Matches (
 create table Match_Participants (
     match_id int not null,
     player_id int not null,
+    result int default 6,
     foreign key(match_id) references Matches(match_id),
     foreign key(player_id) references Players(player_id)
 );
@@ -101,10 +102,10 @@ insert into matches(match_details) values('Trận đấu ngày 26-3-2024');
 insert into matches(match_details) values('Trận đấu ngày 27-3-2024');
 insert into matches(match_details) values('Trận đấu ngày 28-3-2024');
 
-insert into Match_Participants(match_id, player_id) VALUES (1, 1);
-insert into Match_Participants(match_id, player_id) VALUES (2, 1);
-insert into Match_Participants(match_id, player_id) VALUES (3, 2);
-insert into Match_Participants(match_id, player_id) VALUES (3, 1);
+insert into Match_Participants(match_id, player_id, result) VALUES (1, 1, 1);
+insert into Match_Participants(match_id, player_id, result) VALUES (2, 1, 2);
+insert into Match_Participants(match_id, player_id, result) VALUES (3, 2, 3);
+insert into Match_Participants(match_id, player_id, result) VALUES (3, 1, 5);
 
 insert into deposit_history(player_id, deposit_amount) values(1, 30000);
 insert into deposit_history(player_id, deposit_amount) values(2, 42000);
@@ -114,3 +115,5 @@ insert into deposit_history(player_id, deposit_amount) values(2, 67000);
 insert into deposit_history(player_id, deposit_amount) values(3, 100000);
 
 
+select * from skins;
+delete from skins where skin_id=5
