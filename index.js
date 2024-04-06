@@ -1,310 +1,134 @@
 import express from "express";
-import {createServer} from 'node:http';
-import {Server} from 'socket.io';
+import { createServer } from "node:http";
+import { Server } from "socket.io";
 import cors from "cors";
 import mysql from "mysql2";
-import {log} from "node:console";
+import {
+  GetAllPlayers,
+  Register,
+  Login,
+  UpdatePassword,
+} from "./controllers/playerController.js";
+
+import {
+  getAllskins,
+  addNewSkin,
+  updateSkin,
+  deleteSkin,
+} from "./controllers/skinController.js";
+import {
+  addNewSkinGroup,
+  deleteSkinGroup,
+  getAllSkinGroups,
+  updateSkinGroup,
+} from "./controllers/skinGroupController.js";
+import {
+  addNewSkinUser,
+  deleteSkinUser,
+  updateSkinUser,
+} from "./controllers/skinUserController.js";
 const app = express();
 
 const server = createServer(app);
 app.use(cors());
+app.use(express.json());
 
+//socket io connection to client side
 const io = new Server(server, {
-    connectionStateRecovery: {},
-    cors : {
-        origin: "http://localhost:3000"
-    }
+  connectionStateRecovery: {},
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "021103",
+  database: "CardGame",
 });
 
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '021103',
-    database: 'CardGame'
-})
+//connect to database
 db.connect((err) => {
-    if(err) {
-        stack
-        console.log(`error connecting ${err.stack}`)
-        return;
-    }
-    console.log(`database connection established`);
-})
-app.use(express.json());
+  if (err) {
+    stack;
+    console.log(`error connecting ${err.stack}`);
+    return;
+  }
+  console.log(`database connection established`);
+});
+global.db = db; //db are available globally
 
 let ListRoom = [];
 let index = 0;
-io.on('connection', (socket) => {
-    socket.on('load', () => {
-        console.log("ok loaded");
-        io.emit('lRooms', ListRoom);
-    })
-    socket.on('join', (roomid) => {
-        console.log("joined with id", roomid);
-        socket.join(roomid);
-        for(let i=0; i<index; i++) {
-            console.log(ListRoom[i]);
-        }
-        let check = false;
-        ListRoom.forEach((e) => {
-            if(e == roomid) {
-                check = true;
-            }
-        })
-        if(!check) {
-            ListRoom[index] = roomid;
-            ++index;
-        }
-        io.emit('lRooms', ListRoom)
-    })
-    socket.on('chat', (roomid, message) => {
-        console.log(`${roomid} and ${message}`)
-        socket.join(roomid);
-        io.to(roomid).emit('chat', message);
-        //io.emit("chat", "CHAT");
-    })
-    let dis = 1;
-    socket.on("disconnect", () => {
-        console.log("user disconnected", ++dis);
-    })
+io.on("connection", (socket) => {
+  socket.on("load", () => {
+    console.log("ok loaded");
+    io.emit("lRooms", ListRoom);
+  });
+  socket.on("join", (roomid) => {
+    console.log("joined with id", roomid);
+    socket.join(roomid);
+    for (let i = 0; i < index; i++) {
+      console.log(ListRoom[i]);
+    }
+    let check = false;
+    ListRoom.forEach((e) => {
+      if (e == roomid) {
+        check = true;
+      }
+    });
+    if (!check) {
+      ListRoom[index] = roomid;
+      ++index;
+    }
+    io.emit("lRooms", ListRoom);
+  });
+  socket.on("chat", (roomid, message) => {
+    console.log(`${roomid} and ${message}`);
+    socket.join(roomid);
+    io.to(roomid).emit("chat", message);
+    //io.emit("chat", "CHAT");
+  });
+  let dis = 1;
+  socket.on("disconnect", () => {
+    console.log("user disconnected", ++dis);
+  });
 });
-
-app.get('/', (_req, res) => {
-  res.json({msg: "hello world"})
-});
-
 //----------------------------------------------------------------------------------------------
-app.get('/getallusers', (_req, res) => {
-    const query = 'select * from players';
-    db.query(query, (err, data) => {
-        if(err){
-            console.log(`error get all player: ${err}`);
-            return res.json(err);
-        }
-        return res.json(data);
-    })
-})
-
+app.get("/getallusers", GetAllPlayers);
 //user registyer
-app.post('/register', (req, res) => {
-    const sql = "insert into players(username, password) values(?)";
-    const info = [
-        req.body.username,
-        req.body.password
-    ];
-    db.query(sql, [info], (err, data) => {
-        if(err) {
-            return res.send(err);
-        }
-        return res.status(201).json(data);
-    });
-});
-
+app.post("/register", Register);
 //user login
-app.post('/login', (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    const sql = `select * from players where username='${username}' and password='${password}'`;
-    db.query(sql, (err, data) => {
-        if(err) {
-            return res.send(err);
-        }
-        if(data.length > 0) {
-            return res.status(201).json(data);
-        }
-        return res.status(400).json({
-            msg: "cannot find any player"
-        })
-    });
-});
-
+app.post("/login", Login);
 //user update password
-app.put('/userupdate/:id', (req, res) => {
-    console.log(req.body.password)
-    const sql = `update players set password=? where player_id=?`;
-    const info = [
-        req.body.password,
-        req.params.id
-    ]
-    db.query(sql,[...info], (err, _data) => {
-        if(err) {
-            return res.status(400).json("cannot change password");
-        }
-        return res.status(400).json({
-            msg: "ok, your password has been updated"
-        })
-    })
-});
+app.put("/userupdate/:id", UpdatePassword);
 
 //----------------------------------------------------------------------------------------------
 //get all group skin
-app.get('/getallskingroups', (_req, res) => {
-    const sql = 'select * from skin_groups';
-    db.query(sql, (err, data) => {
-        if(err) {
-            return res.status(400).json({
-                msg: "cannot get any skin_groups"
-            })
-        }
-        return res.json(data);
-    })
-})
-
+app.get("/getallskingroups", getAllSkinGroups);
 //create new skin group
-app.post('/addnewskingroup', (req, res) => {
-    const sql = 'insert into skin_groups(skin_group_name) values(?)';
-    db.query(sql, [req.body.skin_group_name], (err, _data) => {
-        if(err) {
-            return res.status(400).json({
-                msg : "failed to create new skin_group"
-            })
-        }
-        return res.json({
-            msg: "ok"
-        })
-    });
-});
-
+app.post("/addnewskingroup", addNewSkinGroup);
 //update name skin group
-app.put('/updateskingroup/:id', (req, res) => {
-    const sql = 'update skin_groups set skin_group_name=? where skin_group_id=?';
-    const info = [
-        req.body.skin_group_name,
-        req.params.id
-    ]
-    db.query(sql, [...info], (err, _data) => {
-        if(err){
-            return res.status(400).json({msg:"failed"})
-        }
-        return res.json({msg:"ok, updated"})
-    })
-});
-
+app.put("/updateskingroup/:id", updateSkinGroup);
 //delete skin group
-app.delete('/deleteskingroup/:id', (req, res) => {
-    const sql = "delete from skin_groups where skin_group_id=?";
-    db.query(sql, [req.params.id], (err, _data) => {
-        if(err) {
-            return res.status(400).json({msg:"failed"})
-        }
-        return res.json({msg: "ok deleted"})
-    })
-})
+app.delete("/deleteskingroup/:id", deleteSkinGroup);
 //----------------------------------------------------------------------------------------------
 //get all skin
-app.get('/getallskins', (_req, res) => {
-    const query = 'select * from skins';
-    db.query(query, (err, data) => {
-        if(err){
-            console.log(`error get all player: ${err}`);
-            return res.json(err);
-        }
-        return res.json(data);
-    })
-})
-
+app.get("/getallskins", getAllskins);
 //add new skin
-app.post('/addnewskin', (req, res) => {
-    const sql = "insert into skins(skin_name, skin_price, skin_group_id) values(?, ?, ?)";
-    const info = [
-        req.body.skin_name,
-        req.body.skin_price,
-        req.body.skin_group_id,
-    ]
-    db.query(sql,[...info], (err, data) => {
-        if(err){
-            console.log(`error get all player: ${err}`);
-            return res.json(err);
-        }
-        return res.json(data);
-    })
-})
-
+app.post("/addnewskin", addNewSkin);
 // update a skin
-app.put('/skinupdate/:id', (req, res) => {
-    console.log(req.body.password)
-    const sql = "update skins set `skin_name`=?, `skin_price`=?, `skin_group_id`=? where skin_id=?";
-    const info = [
-        req.body.skin_name,
-        req.body.skin_price,
-        req.body.skin_group_id,
-    ]
-    db.query(sql,[...info, req.params.id], (err, _data) => {
-        if(err) {
-            console.log(err);
-            return res.status(400).json("cannot update this skin");
-        }
-        return res.status(201).json({
-            msg: "ok, your skin has been updated"
-        })
-    })
-});
-
+app.put("/skinupdate/:id", updateSkin);
 //delete a skin
-app.delete('/skindelete/:id', (req, res) => {
-    console.log(req.params.id)
-    const sql = "delete from skins where skin_id=?";
-    db.query(sql, [req.params.id], (err, _data) => {
-        if(err) {
-            return res.status(400).json({
-                msg: "cannot delete skin in database"
-            })
-        }
-        return res.json({msg: "ok, skin has been deleted"});
-    })
-})
+app.delete("/skindelete/:id", deleteSkin);
 //----------------------------------------------------------------------------------------------
 //add new skin_user
-app.post('/addnewskinuser', (req, res) => {
-    const sql = "insert into skin_user(skin_id, player_id, skin_user_expried) values(?)";
-    const info = [
-        req.body.skin_id,
-        req.body.player_id,
-        req.body.skin_user_expried
-    ]
-    db.query(sql, [info], (err, _data) => {
-        if(err) {
-            return res.status(400).json({
-                msg: "failed to create"
-            })
-        }
-        return res.json({msg: "ok, created"});
-    })
-})
-
+app.post("/addnewskinuser", addNewSkinUser);
 //update skin_user
-app.put('/addnewskinuser/:id', (req, res) => {
-    const sql = "update skin_user set skin_id=?, player_id=?, skin_user_expried=? where skin_user_id=?";
-    const info = [
-        req.body.skin_id,
-        req.body.player_id,
-        req.body.skin_user_expried,
-        req.params.id
-    ]
-    db.query(sql, [...info], (err, _data) => {
-        if(err) {
-            return res.status(400).json({
-                msg: "failed to update"
-            })
-        }
-        return res.json({msg: "ok, updated"});
-    })
-})
-
+app.put("/updateskinuser/:id", updateSkinUser);
 //delete skin_user row
-app.delete('/deleteskinuser/:id', (req, res) => {
-    console.log(req.params.id)
-    const sql = "delete from skin_user where skin_id=?";
-    db.query(sql, [req.params.id], (err, _data) => {
-        if(err) {
-            return res.status(400).json({
-                msg: "cannot delete skin_user in database"
-            })
-        }
-        return res.json({msg: "ok,deleted"});
-    })
-})
+app.delete("/deleteskinuser/:id", deleteSkinUser);
 
 server.listen(8080, () => {
-  console.log('server running at http://localhost:8080');
+  console.log("server running at http://localhost:8080");
 });
