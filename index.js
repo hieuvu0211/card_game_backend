@@ -27,6 +27,27 @@ import {
   deleteSkinUser,
   updateSkinUser,
 } from "./controllers/skinUserController.js";
+import {
+  createNewMatch,
+  getAllMatches,
+  updateMatchById,
+  getMatchById,
+  deleteMatchById,
+} from "./controllers/mathController.js";
+import {
+  deleteMatchParticipantById,
+  getAllMatchParticipants,
+  updateMatchParticipantById,
+  getMatchParticipantById,
+  createNewMatchParticipant,
+} from "./controllers/match_participantController.js";
+import {
+  createNewDeposit,
+  deleteDepositById,
+  getAllDeposits,
+  getDepositById,
+  updateDepositById,
+} from "./controllers/depositController.js";
 const app = express();
 
 const server = createServer(app);
@@ -118,9 +139,9 @@ app.get("/getallskins", getAllskins);
 //add new skin
 app.post("/addnewskin", addNewSkin);
 // update a skin
-app.put("/skinupdate/:id", updateSkin);
+app.put("/updateskin/:id", updateSkin);
 //delete a skin
-app.delete("/skindelete/:id", deleteSkin);
+app.delete("/deleteskin/:id", deleteSkin);
 //----------------------------------------------------------------------------------------------
 //add new skin_user
 app.post("/addnewskinuser", addNewSkinUser);
@@ -128,6 +149,32 @@ app.post("/addnewskinuser", addNewSkinUser);
 app.put("/updateskinuser/:id", updateSkinUser);
 //delete skin_user row
 app.delete("/deleteskinuser/:id", deleteSkinUser);
+
+//----------------------------------------------------------------------------------------------
+//Matches
+app.get("/getallmatches", getAllMatches);
+app.get("/getmatchbyid/:id", getMatchById);
+app.post("/addnewmatch", createNewMatch);
+app.put("/updatematch/:id", updateMatchById);
+app.delete("/deletematch/:id", deleteMatchById);
+
+//----------------------------------------------------------------------------------------------
+
+//Match Participants
+app.get("/getallmatchparticipants", getAllMatchParticipants);
+app.get("/getmatchparticipantbyid/:id", getMatchParticipantById);
+app.post("/addnewmatchparticipant", createNewMatchParticipant);
+app.put("/updatematchparticipant/:id", updateMatchParticipantById);
+app.delete("/deletematchparticipant/:id", deleteMatchParticipantById);
+
+//----------------------------------------------------------------------------------------------
+//Deposit History
+app.get("/getalldeposithistory", getAllDeposits);
+app.post("/addnewdeposit", createNewDeposit);
+app.get("/getalldeposithistory", getDepositById);
+app.put("/updatedeposit/:id", updateDepositById);
+app.delete("/deleteposithistory", deleteDepositById);
+//----------------------------------------------------------------------------------------------
 
 server.listen(8080, () => {
   console.log("server running at http://localhost:8080");
