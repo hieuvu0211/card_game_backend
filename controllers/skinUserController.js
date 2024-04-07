@@ -33,8 +33,32 @@ function updateSkinUser(req, res) {
     })
 };
 
-function deleteSkinUser(req, res) {
+function deleteSkinUserBySkinUserId(req, res) {
     console.log(req.params.id)
+    const sql = "delete from skin_user where skin_user_id=?";
+    db.query(sql, [req.params.id], (err, _data) => {
+        if(err) {
+            return res.status(400).json({
+                msg: "cannot delete skin_user in database"
+            })
+        }
+        return res.json({msg: "ok,deleted"});
+    })
+};
+
+function deleteSkinUserByPlayerId(req, res) {
+    const sql = "delete from skin_user where player_id=?";
+    db.query(sql, [req.params.id], (err, _data) => {
+        if(err) {
+            return res.status(400).json({
+                msg: "cannot delete skin_user in database"
+            })
+        }
+        return res.json({msg: "ok,deleted"});
+    })
+};
+
+function deleteSkinUserBySkinId(req, res) {
     const sql = "delete from skin_user where skin_id=?";
     db.query(sql, [req.params.id], (err, _data) => {
         if(err) {
@@ -45,4 +69,4 @@ function deleteSkinUser(req, res) {
         return res.json({msg: "ok,deleted"});
     })
 };
-export {addNewSkinUser, updateSkinUser, deleteSkinUser};
+export {addNewSkinUser, updateSkinUser, deleteSkinUserBySkinUserId, deleteSkinUserByPlayerId, deleteSkinUserBySkinId};

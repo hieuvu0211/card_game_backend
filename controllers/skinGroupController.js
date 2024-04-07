@@ -38,12 +38,29 @@ function updateSkinGroup(req, res) {
   });
 }
 function deleteSkinGroup(req, res) {
-  const sql = "delete from skin_groups where skin_group_id=?";
-  db.query(sql, [req.params.id], (err, _data) => {
+  //delete all elements in skin_user
+  const sql1 = "delete from skin_user where skin_id in (select Skins.skin_id from skins where skin_group_id=?)";
+  //delete all elements in Skins where skin_group_id=?
+  const sql2 = "delete from skins where skin_group_id=?";
+  //finally delete the skin_group where skin_group_id=?
+  const sql3 = "delete from skin_groups where skin_group_id=?";
+  db.query(sql1, [req.params.id], (err, _data) => {
     if (err) {
-      return res.status(400).json({msg: "failed"});
+      return res.status(400).json({msg: "failed1"});
     }
-    return res.json({msg: "ok deleted"});
+    db.query(sql2, [req.params.id], (err, _data) => {
+      if (err) {
+        return res.status(400).json({msg: "failed2"});
+      }
+
+      db.query(sql3, [req.params.id], (err, _data) => {
+        if (err) {
+          return res.status(400).json({msg: "failed3"});
+        }
+        return res.json({msg: "ok, deleted"});
+      });
+
   });
+});
 }
 export { getAllSkinGroups, addNewSkinGroup, updateSkinGroup, deleteSkinGroup};

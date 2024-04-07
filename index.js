@@ -24,7 +24,9 @@ import {
 } from "./controllers/skinGroupController.js";
 import {
   addNewSkinUser,
-  deleteSkinUser,
+  deleteSkinUserByPlayerId,
+  deleteSkinUserBySkinId,
+  deleteSkinUserBySkinUserId,
   updateSkinUser,
 } from "./controllers/skinUserController.js";
 import {
@@ -148,7 +150,9 @@ app.post("/addnewskinuser", addNewSkinUser);
 //update skin_user
 app.put("/updateskinuser/:id", updateSkinUser);
 //delete skin_user row
-app.delete("/deleteskinuser/:id", deleteSkinUser);
+app.delete("/deleteskinuserbyskinuser/:id", deleteSkinUserBySkinUserId);
+app.delete("/deleteskinuserbyuser/:id", deleteSkinUserByPlayerId);
+app.delete("/deleteskinuserbyskin/:id", deleteSkinUserBySkinId);
 
 //----------------------------------------------------------------------------------------------
 //Matches
