@@ -50,6 +50,7 @@ import {
   getDepositById,
   updateDepositById,
 } from "./controllers/depositController.js";
+
 const app = express();
 
 const server = createServer(app);
@@ -63,6 +64,7 @@ const io = new Server(server, {
     origin: "http://localhost:3000",
   },
 });
+
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -117,9 +119,58 @@ io.on("connection", (socket) => {
     console.log("user disconnected", ++dis);
   });
 });
+
+///////########## Game Room ##########
 //----------------------------------------------------------------------------------------------
+app.get("/createNamespace", function (req, res) {
+  let newNamespace = "";
+  while (newNamespace == "" || newNamespace in namespaces) {
+    //gen random seed
+    const characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
+    let result = '';
+    for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      result += characters[randomIndex];
+    }
+    newNamespace = result;
+  }
+
+  //create GameSocket
+  const newSocket = io.of(`/${newNamespace}`)
+  //create RoomSocket included GameSocket
+  mainSocket = (newSocket, `/${newNamespace}`)
+  namespaces[newNamespace] = null;
+  console.log(newNamespace + " CREATED")
+  res.json({ namespaces: newNamespace })
+});
+
+//mainSocket for room
+mainSocket = (gameSocket, namespace) => {
+  let players = []; //players in line
+  let partyMembers = []; //players in room
+  let partyLeader = "";
+  let started = false;
+
+  //connection
+  gameSocket.on("connection", (socket) => {
+    console.log("id: ", socket.id);
+
+  })
+
+  //
+}
+
+
+
+//----------------------------------------------------------------------------------------------
+
+
+
+
+//----------------------------------------------------------------------------------------------
+//get all user
 app.get("/getallusers", GetAllPlayers);
-//user registyer
+//user register
 app.post("/register", Register);
 //user login
 app.post("/login", Login);
