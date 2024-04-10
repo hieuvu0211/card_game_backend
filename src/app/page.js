@@ -1,10 +1,8 @@
 'use client'
 import Link from "next/link";
 import React from "react";
-import { useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 export default function Home() {
-  const [value, setValue] = useState(true)
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   return (
     <>
@@ -14,19 +12,13 @@ export default function Home() {
       <input type="text" placeholder="Type here" className=" w-full bg-slate-700 opacity-75 h-10 pl-2 rounded-x-md rounded-b-md"></input>
     </div>
         <div className=" flex flex-col w-full p-2 m-1 items-center justify-center">
-          {/* {value? (
-            <button onClick={() => setValue(o => !o)} className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">GAME SUCK</button>
-          ):
-          (
-            <button onClick={() => setValue(o => !o)} className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">GAME...</button>
-          )} */}
           <div className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">FIND GAME</div>
           <Link className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl" href='/create_room'>CREATE ROOM</Link>
           <div className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">FIND ROOM</div>
           <div className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl"><button onClick={onOpen}>RULES</button></div>
         </div>
     </div>
-          <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" size="4xl">
+          <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" size="full">
           <ModalContent>
             {(onClose) => (
               <>
@@ -73,12 +65,9 @@ export default function Home() {
                   </p>
                 </ModalBody>
                 <ModalFooter>
-                  <Button color="danger" variant="solid" onPress={onClose}>
+                  <Button color="secondary" className=" text-md font-bold" onPress={onClose}>
                     Close
                   </Button>
-                  {/* <Button color="primary" onPress={onClose}>
-                    Action
-                  </Button> */}
                 </ModalFooter>
               </>
             )}

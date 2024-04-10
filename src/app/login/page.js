@@ -7,22 +7,9 @@ import { useCookies } from 'react-cookie';
 export default function Login() {
     const [value1, setValue1] = useState("");
     const [value2, setValue2] = useState("");
-    const [data, setData] = useState("");
     const router = useRouter();
     const [cookies, setCookie, removeCookie] = useCookies(['login']);
     let count = 1;
-    // useEffect(() =>  {
-    //     const fetch = async () => {
-    //         const result = await fetch("http://localhost:8080/player");
-    //         const newData = await result.json();
-    //         console.log(newData);
-    //         setData(newData);
-    //         console.log(data);
-    //         console.log("siuuuuu")            
-        
-    //     }
-    //     fetch();
-    // }, []);
     const handlerClick =  () => {
         fetch('http://localhost:8080/login', {method: 'POST',  headers: {
             'Content-Type': 'application/json',
