@@ -1,24 +1,33 @@
 'use client'
 import Link from "next/link";
 import React from "react";
+import { useState } from "react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 export default function Home() {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const [chat, setChat] = useState("");
+  const data=[]
+  const handleKeyDown = (e) => {
+    if(e.key === "Enter") {
+      data.push(chat)
+    }
+  }
   return (
     <>
     <div className="flex flex-row min-h-screen justify-center items-center">
-    <div className="flex flex-col fixed left-0 h-full w-96 items-center justify-center pl-2">
-      <div className="  w-full h-56 opacity-75 bg-gray-900 rounded-x-md rounded-t-md"></div>
-      <input type="text" placeholder="Type here" className=" w-full bg-slate-700 opacity-75 h-10 pl-2 rounded-x-md rounded-b-md"></input>
+    <div id="chat" className="flex flex-col fixed left-0 h-full w-96 items-center justify-center pl-2">
+      <div className="flex flex-cols  w-full h-56 opacity-75 bg-gray-900 rounded-x-md rounded-t-md">
+      </div>
+      <input type="text" placeholder="Type here" value={chat} onChange={(e) => setChat(e.currentTarget.value)} onKeyDown={handleKeyDown} className=" w-full bg-slate-700 opacity-75 h-10 pl-2 rounded-x-md rounded-b-md"></input>
     </div>
         <div className=" flex flex-col w-full p-2 m-1 items-center justify-center">
           <div className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">FIND GAME</div>
           <Link className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl" href='/create_room'>CREATE ROOM</Link>
           <div className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">FIND ROOM</div>
-          <div className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl"><button onClick={onOpen}>RULES</button></div>
+          <button onClick={onOpen} className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">RULES</button>
         </div>
     </div>
-          <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" size="full">
+          <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" size="5xl" className=" text-sm">
           <ModalContent>
             {(onClose) => (
               <>

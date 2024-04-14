@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from 'next/link'
 import { useRouter } from "next/navigation";
 import { Modal, ModalContent, ModalBody, ModalHeader, ModalFooter, useDisclosure} from "@nextui-org/react"
-export default function Login() {
+export default function Register() {
     const {isOpen, onOpen, onClose} = useDisclosure();
     const [name, setName] = useState("");
     const [pass, setPass] = useState("");

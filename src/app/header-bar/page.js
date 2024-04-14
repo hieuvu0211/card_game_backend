@@ -19,10 +19,6 @@ export default function HeaderBar() {
           <div className="flex flex-row bg-slate-800 basis-1/2  justify-end">
             <div className="  m-2 w-16 text-center hover:bg-gray-600 rounded-3xl"><Link href="/shop">Shop</Link></div>
             <div className="  m-2 w-20 text-center hover:bg-gray-600 rounded-3xl">
-              {/* <Link href="/login">{cookies['login']?
-              
-                'Sign out' : 'Sign in'
-              }</Link> */}
               {cookies['login']? <button onClick={handleLogin}>Sign out</button>: <Link href='/login'>Sign in</Link>}
               </div>
             <div className="  m-2 w-20 text-center hover:bg-gray-600 rounded-3xl"><Link href="/register">Register</Link></div>

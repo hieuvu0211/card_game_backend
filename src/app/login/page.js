@@ -4,18 +4,21 @@ import { useState } from "react";
 import Link from 'next/link'
 import { useRouter } from "next/navigation";
 import { useCookies } from 'react-cookie';
+import { Modal, ModalContent, ModalBody, ModalHeader, ModalFooter, useDisclosure} from "@nextui-org/react"
 export default function Login() {
     const [value1, setValue1] = useState("");
     const [value2, setValue2] = useState("");
     const router = useRouter();
+    const {isOpen, onOpen, onClose} = useDisclosure();
     const [cookies, setCookie, removeCookie] = useCookies(['login']);
-    let count = 1;
+
     const handlerClick =  () => {
         fetch('http://localhost:8080/login', {method: 'POST',  headers: {
             'Content-Type': 'application/json',
           }, body: JSON.stringify({username: value1, password: value2})})
         .then(response => response.json())
         .then(data => {
+
             if(data.length > 0)
             {
                 setCookie('login', true, {
@@ -23,21 +26,13 @@ export default function Login() {
                 })
                 router.push('/');
             }
+            else {
+                onOpen();
+            }
         })
-        .catch((error) => console.error('Error: ', error))
-
-        // console.log(data);
-        // const respone = await fetch('http://localhost:8080/login', {value1, value2});
-        // const data = await respone.json();
-        // console.log(data);
-        // count+=1;
-        // console.log(count);
-        // data.map(item => {
-        //     if (value1 === item.username) {
-        //         if(value2 === item.password)
-        //         router.push('/')
-        //     }
-        // })
+        .catch((error) => 
+            console.error('Error: ', error)
+    )
         }
     const handleKeyPress = (e) => {
         if(e.key ==="Enter") {
@@ -45,6 +40,7 @@ export default function Login() {
         }
     }
     return (
+        <>
                         <div className="flex min-h-screen items-center justify-center ">
                             <div className="flex flex-col w-96 items-center justify-center text-center border-8 rounded-xl border-zinc-800 bg-zinc-800 shadow-2xl p-4">
                                 <div className="w-full font-bold text-2xl text-white pl-2">
@@ -60,10 +56,40 @@ export default function Login() {
                                             Login
                                     </button>
                                 <div className="pt-2 text-white">
-                                    <Link href="/">Access without login</Link>
+                                    <Link href='/'>Access without login</Link>
                                 </div>
                             </div>
                         </div>
+        <Modal isOpen={isOpen} onClose={onClose} placement="top" backdrop="blur" motionProps={{
+          variants: {
+            enter: {
+              opacity: 1,
+              transition: {
+                duration: 0.1,
+
+              },
+            },
+            exit: {
+              opacity: 0,
+              transition: {
+                duration: 0.1,
+              },
+            },
+          }
+        }} size="sm">
+        <ModalContent className=" items-center pb-4">
+            {()=> (
+                <>
+                <ModalHeader className=" text-black">Thông báo</ModalHeader>
+                <ModalBody className=" text-green-500">
+                    <div>Đăng nhập thất bại!</div>
+                </ModalBody>       
+                </>
+            )}
+        </ModalContent>
+    </Modal>
+    </>
+
 
     );
 
