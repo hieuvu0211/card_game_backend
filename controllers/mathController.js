@@ -10,7 +10,6 @@ function getAllMatches(req, res) {
 }
 
 function createNewMatch(req, res) {
-  const { player1, player2, winner } = req.body;
   const sql = 'INSERT INTO Matches (match_date, match_details) VALUES (?, ?)';
   let info = [req.body.match_date, req.body.match_details];
   db.query(sql, info, (err, result) => {
@@ -56,4 +55,4 @@ function deleteMatchById(req, res) {
     }
   });
 }
-export { getAllMatches, createNewMatch, getMatchById, updateMatchById, deleteMatchById};
+export { getAllMatches, createNewMatch, getMatchById, updateMatchById, deleteMatchById };
