@@ -1,10 +1,10 @@
 //Khoi tao gia tri mac dinh ten cua la bai
 const CardNames = {
-    DUKE: "Công Tước",
-    ASSASIN: "Sát Thủ",
-    CAPTAIN: "Thuyền Trưởng",
-    CONTESSA: "Huyết Nữ",
-    AMBASSADOR: "Sứ Giả",
+    DUKE: "duke",
+    ASSASIN: "assassin",
+    CAPTAIN: "captain",
+    CONTESSA: "contessa",
+    AMBASSADOR: "ambassador",
     values: function () {
         return [this.DUKE, this.ASSASIN, this.CAPTAIN, this.CONTESSA, this.AMBASSADOR]
     }
@@ -66,7 +66,7 @@ const Actions = {
         moneyDelta: 2
     },
 
-    swap: {
+    exchange: {
         name: "Giả Danh",
         influence: CardNames.AMBASSADOR,
         blockableBy: [],

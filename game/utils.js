@@ -71,10 +71,19 @@ buildPlayers = (players) => {
 
 }
 
+exportPlayers = (players) => {
+    players.forEach(x => {
+        delete x.socketID;
+    });
+    return players;
+}
+
+
 module.exports = {
     buildDeck: buildDeck,
     buildName_ID_Map: buildName_ID_Map,
     buildName_Socket_Map: buildName_Socket_Map,
     buildPlayers: buildPlayers,
-
+    shuffleArray: shuffleArray,
+    exportPlayers: exportPlayers,
 }
