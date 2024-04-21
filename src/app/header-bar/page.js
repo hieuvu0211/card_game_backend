@@ -12,7 +12,7 @@ export default function HeaderBar() {
   }
     return (
       <>
-        <div className=" bg-black text-white flex flex-row w-full fixed top-0">
+        <div className=" bg-black text-white flex flex-row w-full fixed top-0 z-50">
         <div className="flex flex-row bg-slate-800 basis-1/2">
           <Link className="flex flex-row rounded-3xl m-2 text-center w-40" href='/'><img src="/img/icon.ico" className='w-6 h-6 mr-2'/> Coup(2012)</Link>
         </div>

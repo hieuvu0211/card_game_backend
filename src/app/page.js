@@ -12,6 +12,9 @@ export default function Home() {
       data.push(chat)
     }
   }
+  const handleModal = () => {
+    onOpen();
+  }
   return (
     <>
     <div className="flex flex-row min-h-screen justify-center items-center">
@@ -23,10 +26,11 @@ export default function Home() {
         <div className=" flex flex-col w-full p-2 m-1 items-center justify-center">
           <div className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">FIND GAME</div>
           <Link className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl" href='/create_room'>CREATE ROOM</Link>
-          <div className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">FIND ROOM</div>
-          <button onClick={onOpen} className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">RULES</button>
+          <Link href="/find_room" className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">FIND ROOM</Link>
+          <button onClick={() => handleModal()} className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">RULES</button>
         </div>
     </div>
+
           <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center" size="5xl" className=" text-sm">
           <ModalContent>
             {(onClose) => (

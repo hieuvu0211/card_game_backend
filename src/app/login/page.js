@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from "next/navigation";
 import { useCookies } from 'react-cookie';
 import { Modal, ModalContent, ModalBody, ModalHeader, ModalFooter, useDisclosure} from "@nextui-org/react"
+import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 export default function Login() {
     const [value1, setValue1] = useState("");
     const [value2, setValue2] = useState("");
@@ -28,6 +29,8 @@ export default function Login() {
             }
             else {
                 onOpen();
+                console.log(data.msg)
+
             }
         })
         .catch((error) => 

@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.11",
-    "@next/font": "^14.1.4",
     "@nextui-org/react": "^2.2.10",
     "framer-motion": "^11.0.25",
     "next": "14.1.4",
@@ -20,7 +19,8 @@
     "react": "^18",
     "react-cookie": "^7.1.4",
     "react-dom": "^18",
-    "reactjs-popup": "^2.0.6"
+    "reactjs-popup": "^2.0.6",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",
