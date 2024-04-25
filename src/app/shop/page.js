@@ -1,9 +1,10 @@
 'use client'
 import useSWR from 'swr';
 import { Card, CardBody, CardFooter, Image} from '@nextui-org/react';
-import { useRouter} from 'next/navigation'
+import { usePathname, useRouter, useSearchParams} from 'next/navigation'
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useReducer } from 'react';
+import Pagination from './pagination';
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 const fetchData = () => {
     const {data, error} = useSWR('http://localhost:8080/getallskins', fetcher);
@@ -11,10 +12,13 @@ const fetchData = () => {
 }
 
 export default function Page() {
-    const route = useRouter();
+    // const [, forceUpdate] = useReducer(x => x + 1, 0);
+    // const { replace } = useRouter();
+    // const pathname = usePathname();
+    const searchParam = useSearchParams();
+    const param = new URLSearchParams(searchParam);
+    const page = param.get('page') ?? 1;
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
-    // const [data, setData] = useState(null);
-    const [page, setPage] = useState(1);
     const [data1, setData1] = useState("");
     const [data2, setData2] = useState("");
     const handleOnPress = (name, price) => {
@@ -22,9 +26,11 @@ export default function Page() {
         setData2(price);
         onOpen();
     }
-    const handlePageClick = (index) => {
-        setPage(index);
-    }
+    // const handlePageClick = (index) => {
+    //     param.set('page', index);
+    //     replace(`${pathname}?${param}`);
+    //     forceUpdate();
+    // }
     const data = fetchData();
     // useEffect(() => {
     //     fetch('http://localhost:8080/getallskins')
@@ -35,27 +41,27 @@ export default function Page() {
     const itemsPerPage = 2;
     const numberOfPages = Math.round(data.length/itemsPerPage);
     const dataPage = data.slice((page-1)*itemsPerPage, itemsPerPage*page);
-    console.log(numberOfPages)
-    const pagination = Array.from({length: numberOfPages}, (_, index) => {
-        if ((index+1)===page) {
-            return (
-                <button key={index} className=' text-black font-bold px-2 mx-2 my-2 bg-amber-500 rounded-md ' onClick={() => {handlePageClick(index+1)}}>
-                {index + 1}
-                </button>
-            )        
-        }
-        else {
-            return (
-                <button key={index} className=' text-black font-bold px-2 mx-2 my-2 bg-zinc-300 rounded-md hover:bg-amber-500 ' onClick={() => {handlePageClick(index+1)}}>
-                {index + 1}
-                </button>
-            )
-        }
+//     const pagination = Array.from({length: numberOfPages}, (_, index) => {
+//         if ((index+1)===page) {
+
+//             return (
+//                 <button key={index} className=' text-black font-bold px-2 mx-2 my-2 bg-amber-500 rounded-md ' onClick={() => {handlePageClick(index+1)}}>
+//                 {index + 1}
+//                 </button>
+//             )        
+//         }
+//         else {
+//             return (
+//                 <button key={index} className=' text-black font-bold px-2 mx-2 my-2 bg-zinc-300 rounded-md hover:bg-amber-500 ' onClick={() => {handlePageClick(index+1)}}>
+//                 {index + 1}
+//                 </button>
+//             )
+//         }
 
 
 
 
-});
+// });
     return (
         <>
         <div className="flex flex-col min-h-screen w-screen ">
@@ -81,7 +87,7 @@ export default function Page() {
             </div>
             <div className='absolute w-full flex items-center justify-center inset-x-0 bottom-0'>
                 <div className='flex items-center justify-center w-fit bg-slate-800 rounded-xl mb-2'>
-                { pagination }
+                <Pagination currentPage={page} totalPage={numberOfPages} />
                 </div>
             </div>
         </div>

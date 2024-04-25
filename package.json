@@ -11,6 +11,7 @@
   "dependencies": {
     "@floating-ui/react": "^0.26.11",
     "@nextui-org/react": "^2.2.10",
+    "axios": "^1.6.8",
     "framer-motion": "^11.0.25",
     "next": "14.1.4",
     "next-nprogress-bar": "^2.3.11",
@@ -19,7 +20,10 @@
     "react": "^18",
     "react-cookie": "^7.1.4",
     "react-dom": "^18",
+    "react-sortablejs": "^6.1.4",
     "reactjs-popup": "^2.0.6",
+    "socket.io-client": "^4.7.5",
+    "sortablejs": "^1.15.2",
     "swr": "^2.2.5"
   },
   "devDependencies": {

@@ -84,7 +84,7 @@ export default function Login() {
             {()=> (
                 <>
                 <ModalHeader className=" text-black">Thông báo</ModalHeader>
-                <ModalBody className=" text-green-500">
+                <ModalBody className=" text-red-600">
                     <div>Đăng nhập thất bại!</div>
                 </ModalBody>       
                 </>

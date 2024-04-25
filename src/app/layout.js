@@ -1,4 +1,5 @@
 'use client'
+
 import "./globals.css";
 import { CookiesProvider } from 'react-cookie';
 import dynamic from 'next/dynamic'
