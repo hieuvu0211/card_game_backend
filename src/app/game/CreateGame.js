@@ -131,11 +131,22 @@ export default class CreateGame extends Component {
         if (this.state.isError) {
             error = <b>{this.state.errorMsg}</b>
         }
+        if (this.state.roomCode !== '' && !this.state.isLoading) {
+            youCanSort = <p>You can drag to re-arrange the players in a specific turn order!</p>
+            roomCode = <div className='m-2 items-center'>
+                <p className='flex flex-col items-center rounded-sm border-solid border-2 border-[#0F1B38] bg-[#514846]'>ROOM CODE: <br></br> <br></br>
+                    <b className="text-black bg-[#F2F2F2] cursor-pointer m-[5px] p-[5px] rounded-[5px] border-2 border-solid border-[#707070]" onClick={this.copyCode}>{this.state.roomCode}
+                        <span className="iconify" data-icon="typcn-clipboard" data-inline="true"></span>
+                    </b>
+                </p>
+                {this.state.copied ? <p>Copied to clipboard</p> : null}
+            </div>
+        }
         if (this.state.canStart) {
             startGame = <button onClick={this.startGame}>Start Game</button>
         }
         return (
-            <div>
+            <div className='absolute flex flex-col'>
                 <p>Please enter your name</p>
                 <input className=' text-black'
                     type="text" value={this.state.name} disabled={this.state.isLoading || this.state.isInRoom}
@@ -159,7 +170,8 @@ export default class CreateGame extends Component {
                 {createButton}
                 {error}
                 <br></br>
-                <div>
+                {roomCode}
+                <div className='text-center mx-auto my-0'>
                     <ReactSortable list={this.state.players} setList={newState => this.setState({ players: newState })}>
                         {this.state.players.map((item, index) => {
                             let ready = null
