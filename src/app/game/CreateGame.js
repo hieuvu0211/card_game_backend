@@ -23,53 +23,57 @@ export default class CreateGame extends Component {
     onNameChange = (name) => {
         this.setState({ name });
     }
-    
-    joinParty = () => {
-        const bind = this
-        const socket = io(`http://localhost:8080/${this.state.roomCode}`, {
-            path: "/socket",
-            transports: ["websocket"],
-        });
-        
-        this.setState({ socket });
-        console.log("socket created");
-        console.log(this.state.name);
-        socket.emit('setName', this.state.name);
-        // console.log("setName Done")
 
-        socket.on("joinSuccess", function() {
-            console.log("join successful")
-            bind.setState({ 
-                isLoading: false,
-                isInRoom: true
+    joinParty = async () => {
+        try {
+            console.log(this.state.roomCode);
+            const socket = await io(`http://localhost:8080/${this.state.roomCode}`);
+            await this.setStateAsync({ socket: socket });
+            console.log("socket created");
+            console.log(this.state.name);
+            socket.emit('setName', this.state.name);
+
+            socket.on("joinSuccess", () => {
+                console.log("join successful");
+                this.setStateAsync({
+                    isLoading: false,
+                    isInRoom: true
+                });
             });
-        })
 
-        socket.on("joinFailed", function(err) {
-            console.log("join failed, cause: " + err);
-            bind.setState({ isLoading: false });
-        })
+            socket.on("joinFailed", (err) => {
+                console.log("join failed, cause: " + err);
+                this.setStateAsync({ isLoading: false });
+            });
 
-        socket.on("leader", function() {
-            console.log("You are the leader")
-        })
+            socket.on("leader", () => {
+                console.log("You are the leader");
+            });
 
-        socket.on('partyUpdate', (players) => {
-            console.log(players)
-            this.setState({ players })
-            if(players.length >= 2 && players.map(x => x.isReady).filter(x => x === true).length === players.length) { //TODO CHANGE 2 BACK TO 3
-                this.setState({ canStart: true })
-            } else {
-                this.setState({ canStart: false })
-            }
-        })
+            socket.on('partyUpdate', (players) => {
+                console.log(players);
+                this.setStateAsync({ players });
+                const allReady = players.length >= 2 && players.every(player => player.isReady);
+                this.setStateAsync({ canStart: allReady });
+            });
 
-        socket.on('disconnected', function() {
-            console.log("You've lost connection with the server")
+            socket.on('disconnected', () => {
+                console.log("You've lost connection with the server");
+            });
+        } catch (error) {
+            console.error("Error in joinParty method", error);
+        }
+    }
+
+    // Helper function to use setState with async/await
+    setStateAsync(state) {
+        return new Promise((resolve) => {
+            this.setState(state, resolve);
         });
     }
+
     createParty = () => {
-        if(this.state.name === '') {
+        if (this.state.name === '') {
             //TODO  handle error
             console.log('Please enter a name');
             this.setState({ errorMsg: 'Please enter a name' });
@@ -78,30 +82,39 @@ export default class CreateGame extends Component {
         }
 
         this.setState({ isLoading: true });
+        console.log(this.state.isLoading)
         const bind = this;
-        axios.get(`http://localhost:8080/createNamespace`)
-            .then(function (res) {
+        axios.get('http://localhost:8080/createNamespace')
+            .then((res) => {
                 console.log(res);
-                bind.setState({ roomCode: res.data.namespace, errorMsg: '' });
-                bind.joinParty();
+                // console.log(res.data.namespaces)
+                this.setState({
+                    roomCode: res.data.namespaces,
+                    errorMsg: ''
+                }, () => {
+                    // console.log(this.state.roomCode);
+                    this.joinParty();
+                });
             })
-            .catch(function (err) {
-                //TODO  handle error
-                console.log("error in creating namespace", err);
-                bind.setState({ isLoading: false });
-                bind.setState({ errorMsg: 'Error creating room, server is unreachable' });
-                bind.setState({ isError: true });
-            })
+            .catch((err) => {
+                console.error("error in creating namespace", err);
+                this.setState({
+                    isLoading: false,
+                    errorMsg: 'Error creating room, server is unreachable',
+                    isError: true
+                });
+            });
+
     }
     startGame = () => {
         this.state.socket.emit('startGameSignal', this.state.players)
 
         this.state.socket.on('startGame', () => {
-            this.setState({ isGameStarted: true});
+            this.setState({ isGameStarted: true });
         })
     }
     render() {
-        if(this.state.isGameStarted) {
+        if (this.state.isGameStarted) {
             return (<Coup name={this.state.name} socket={this.state.socket}></Coup>)
         }
         let error = null;
@@ -109,16 +122,16 @@ export default class CreateGame extends Component {
         let startGame = null;
         let createButton = null;
         let youCanSort = null;
-        if(!this.state.isInRoom) {
+        if (!this.state.isInRoom) {
             createButton = <>
-            <button onClick={this.createParty} disabled={this.state.isLoading}>{this.state.isLoading ? 'Creating...': 'Create'}</button>
-            <br></br>
+                <button onClick={this.createParty} disabled={this.state.isLoading}>{this.state.isLoading ? 'Creating...' : 'Create'}</button>
+                <br></br>
             </>
         }
-        if(this.state.isError) {
+        if (this.state.isError) {
             error = <b>{this.state.errorMsg}</b>
         }
-        if(this.state.canStart) {
+        if (this.state.canStart) {
             startGame = <button onClick={this.startGame}>Start Game</button>
         }
         return (
@@ -127,7 +140,7 @@ export default class CreateGame extends Component {
                 <input className=' text-black'
                     type="text" value={this.state.name} disabled={this.state.isLoading || this.state.isInRoom}
                     onChange={e => {
-                        if(e.target.value.length <= 10){
+                        if (e.target.value.length <= 10) {
                             this.setState({
                                 errorMsg: '',
                                 isError: false
@@ -139,7 +152,7 @@ export default class CreateGame extends Component {
                                 isError: true
                             })
                         }
-                        
+
                     }}
                 />
                 <br></br>
@@ -148,25 +161,25 @@ export default class CreateGame extends Component {
                 <br></br>
                 <div>
                     <ReactSortable list={this.state.players} setList={newState => this.setState({ players: newState })}>
-                        {this.state.players.map((item,index) => {
+                        {this.state.players.map((item, index) => {
                             let ready = null
                             let readyUnitColor = '#E46258'
-                            if(item.isReady) {
+                            if (item.isReady) {
                                 ready = <b>Ready!</b>
                                 readyUnitColor = '#73C373'
                             } else {
                                 ready = <b>Not Ready</b>
                             }
                             return (
-                                    <div style={{backgroundColor: readyUnitColor}} key={index}>
-                                        <p >{index+1}. {item.name} {ready}</p>
-                                    </div>
+                                <div style={{ backgroundColor: readyUnitColor }} key={index}>
+                                    <p >{index + 1}. {item.name} {ready}</p>
+                                </div>
                             )
-                            })
+                        })
                         }
                     </ReactSortable>
                 </div>
-                
+
                 {startGame}
             </div>
         )
