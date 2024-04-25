@@ -1,14 +1,14 @@
-import constants from "./constants";
-import gameutils from "./utils";
+import { constants } from "./constants.js";
+import { gameUtils } from "./utils.js"
 
 class Coup {
     constructor(players, gameSocket) {
-        this.nameSocketMap = gameutils.buildName_Socket_Map(players);
-        this.nameIndexMap = gameutils.buildName_ID_Map(players);
-        this.players = gameutils.buildPlayers(players);
+        this.nameSocketMap = gameUtils.buildName_Socket_Map(players);
+        this.nameIndexMap = gameUtils.buildName_ID_Map(players);
+        this.players = gameUtils.buildPlayers(players);
         this.gameSocket = gameSocket;
         this.currentPlayer = 0;
-        this.deck = gameutils.buildDeck();
+        this.deck = gameUtils.buildDeck();
         this.winner = '';
         this.actions = constants.Actions;
         this.counterActions = constants.CounterActions;
@@ -28,7 +28,7 @@ class Coup {
         this.isExchangeOpen = false;
         this.aliveCount = this.players.length;
         this.votes = 0;
-        this.deck = gameutils.buildDeck();
+        this.deck = gameUtils.buildDeck();
         for (let i = 0; i < this.players.length; i++) {
             this.players[i].money = 2;
             this.players[i].influences = [this.deck.pop(), this.deck.pop()]
@@ -224,7 +224,7 @@ class Coup {
                     for (let i = 0; i < bind.players[playerIndex].influences.length; i++) {
                         if (bind.players[playerIndex].influences[i] == res.influence) {
                             bind.deck.push(bind.players[playerIndex].influences[i]);
-                            bind.deck = gameutils.shuffleArray(bind.deck);
+                            bind.deck = gameUtils.shuffleArray(bind.deck);
                             bind.players[playerIndex].influences.splice(i, 1);
                             break;
                         }
@@ -242,7 +242,7 @@ class Coup {
                     bind.players[playerIndex].influences = res.kept;
                     bind.deck.push(res.putBack[0]);
                     bind.deck.push(res.putBack[1]);
-                    bind.deck = gameutils.shuffleArray(bind.deck);
+                    bind.deck = gameUtils.shuffleArray(bind.deck);
                     bind.isExchangeOpen = false;
                     bind.nextTurn();
                 }
@@ -251,7 +251,7 @@ class Coup {
     }
 
     updatePlayers() {
-        this.gameSocket.emit("game-updatePlayer", gameutils.exportPlayers(JSON.parse(JSON.stringify(this.players))));
+        this.gameSocket.emit("game-updatePlayer", gameUtils.exportPlayers(JSON.parse(JSON.stringify(this.players))));
     }
 
 
@@ -460,4 +460,4 @@ class Coup {
     }
 }
 
-module.exports = Coup;
+export const CoupGame = Coup;

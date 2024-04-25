@@ -51,7 +51,8 @@ import {
   updateDepositById,
 } from "./controllers/depositController.js";
 
-import CoupGame from "./game/coup.js"
+import { CoupGame } from "./game/coup.js";
+
 
 const app = express();
 const server = createServer(app);
@@ -66,23 +67,23 @@ const io = new Server(server, {
   },
 });
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "021103",
-  database: "CardGame",
-});
+// const db = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "021103",
+//   database: "CardGame",
+// });
 
 //connect to database
-db.connect((err) => {
-  if (err) {
-    stack;
-    console.log(`error connecting ${err.stack}`);
-    return;
-  }
-  console.log(`database connection established`);
-});
-global.db = db; //db are available globally
+// db.connect((err) => {
+//   if (err) {
+//     // stack;
+//     console.log(`error connecting ${err.stack}`);
+//     return;
+//   }
+//   console.log(`database connection established`);
+// });
+// global.db = db; //db are available globally
 
 // let ListRoom = [];
 // let index = 0;
@@ -121,7 +122,16 @@ global.db = db; //db are available globally
 //   });
 // });
 
+
+// const game = new CoupGame([{
+//   name: 'Ethan',
+//   socketID: '/DPRI33#OJIB1ERYp-M_K-m5AAAD',
+//   isReady: true
+// }])
+
 ///////########## Game Room ##########
+let namespaces = {};
+
 //----------------------------------------------------------------------------------------------
 app.get("/createNamespace", function (req, res) { //create ROOM
   let newNamespace = "";
@@ -139,49 +149,50 @@ app.get("/createNamespace", function (req, res) { //create ROOM
   //create GameSocket
   const newSocket = io.of(`/${newNamespace}`)
   //create RoomSocket included GameSocket
-  mainSocket = (newSocket, `/${newNamespace}`)
+  mainSocket(newSocket, `/${newNamespace}`);
   namespaces[newNamespace] = null;
   console.log(newNamespace + " CREATED")
   res.json({ namespaces: newNamespace })
 });
 
-app.get("/:exists/:namespace", function (req, res) { //get exist ROOM
+app.get("/exists/:namespace", function (req, res) { //get exist ROOM
   const namespace = req.params.namespace;
   res.json({ exists: (namespace in namespaces) });
 })
 
 /////// mainSocket for room
-mainSocket = (gameSocket, namespace) => {
+function mainSocket(gameSocket, namespace) {
   let players = []; //players in line
   let partyMembers = []; //players in room
   let partyLeader = "";
   let started = false; //game Status
+  console.log("inside mainSocket");
   //connection to room
   gameSocket.on("connection", (socket) => {
-    console.log("id: ", socket.id);
-    players.push({ //add player
-      "players": '',
+    console.log('id: ' + socket.id);
+    players.push({
+      "player": '',
       "socket_id": `${socket.id}`,
       "isReady": false
     })
-    console.log(`Player ${players.length} has connected`)
+    console.log(`player ${players.length} has connected`);
     socket.join(socket.id);
     console.log('socket joined ' + socket.id);
     const index = players.length - 1;
 
     //party list update
     const updatePartyList = () => {
+      console.log("updatePartyList: ", partyMembers);
       partyMembers = players.map(x => {
-        return { name: x.players, socketID: x.socket_id, isReady: x.isReady }
+        return { name: x.player, socketID: x.socket_id, isReady: x.isReady }
       }).filter(x => x.name != '')
       console.log(partyMembers);
-      //send
       gameSocket.emit('partyUpdate', partyMembers);
     }
 
     socket.on('setName', (name) => { //set player name when join
       console.log(started)
-
+      console.log("inside setName");
       if (started) {//if game started
         gameSocket.to(players[index].socket_id).emit("joinFailed", 'game_already_started');
         return
@@ -197,6 +208,10 @@ mainSocket = (gameSocket, namespace) => {
             gameSocket.to(players[index].socket_id).emit("leader");
             console.log("PARTY LEADER IS " + partyLeader)
           }
+          players[index].player = name;
+          console.log(players[index]);
+          updatePartyList();
+          gameSocket.to(players[index].socket_id).emit("joinSuccess", players[index].socket_id);
         }
       } else {
         gameSocket.to(players[index].socket_id).emit("joinFailed", 'name_taken')
@@ -243,21 +258,21 @@ mainSocket = (gameSocket, namespace) => {
   });
 
 
-  let checkEmptyInterval = setInterval(() => {
-    // console.log(Object.keys(namespaces))
-    if (Object.keys(gameSocket['sockets']).length == 0) {
-      delete io.nsps[namespace];
-      if (namespaces[namespace] != null) {
-        delete namespaces[namespace.substring(1)]
-      }
-      clearInterval(checkEmptyInterval)
-      console.log(namespace
-        + 'deleted')
-    }
-  }, 10000)
+  // let checkEmptyInterval = setInterval(() => {
+  //   // console.log(Object.keys(namespaces))
+  //   if (Object.keys(gameSocket['sockets']).length == 0) {
+  //     delete io.nsps[namespace];
+  //     if (namespaces[namespace] != null) {
+  //       delete namespaces[namespace.substring(1)]
+  //     }
+  //     clearInterval(checkEmptyInterval)
+  //     console.log(namespace
+  //       + 'deleted')
+  //   }
+  // }, 10000)
 }
 
-startGame = (players, gameSocket, namespace) => {
+function startGame(players, gameSocket, namespace) {
   namespaces[namespace.substring(1)] = new CoupGame(players, gameSocket);
   namespaces[namespace.substring(1)].start();
 }

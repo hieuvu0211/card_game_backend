@@ -87,7 +87,7 @@ const CounterActions = {
     }
 }
 
-module.exports = {
+export const constants = {
     CardNames: CardNames,
     Actions: Actions,
     CounterActions: CounterActions

@@ -1,6 +1,6 @@
-const constanst = require("./constants")
+import { constants } from "./constants.js";
 
-buildDeck = () => {
+function buildDeck() {
     //create deck
     let deck = [];
     let cardNames = constants.CardNames.values();
@@ -28,18 +28,18 @@ function addToDeck(card, deck) {
     }
 }
 
-shuffleArray = (arr) => {
+function shuffleArray(array) {
     let currentIndex = array.length;
     while (currentIndex !== 0) {
         let randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
         [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
-    return arr;
+    return array;
 }
 
 //build 1 dictionary giua ten nguoi choi va socketID
-buildName_Socket_Map = (players) => {
+function buildName_Socket_Map(players) {
     let map = {}
     players.map((x) => {
         map[x.name] = x.socketID
@@ -48,7 +48,7 @@ buildName_Socket_Map = (players) => {
 }
 
 //build 1 dictionary giua ten nguoi choi va index cua ho
-buildName_ID_Map = (players) => {
+function buildName_ID_Map(players) {
     let map = {}
     players.map((x, index) => {
         map[x.name] = index
@@ -56,8 +56,8 @@ buildName_ID_Map = (players) => {
     return map;
 }
 
-buildPlayers = (players) => {
-    colors = ["#73C373", "#CF3131", "#31CFC8", "#2B55B6", "#AE2BB6", "#D8DB26"]
+function buildPlayers(players) {
+    const colors = ["#73C373", "#CF3131", "#31CFC8", "#2B55B6", "#AE2BB6", "#D8DB26"]
     //suffle ngau nhien
     shuffleArray(colors);
 
@@ -71,7 +71,7 @@ buildPlayers = (players) => {
 
 }
 
-exportPlayers = (players) => {
+function exportPlayers(players) {
     players.forEach(x => {
         delete x.socketID;
     });
@@ -79,7 +79,7 @@ exportPlayers = (players) => {
 }
 
 
-module.exports = {
+export const gameUtils = {
     buildDeck: buildDeck,
     buildName_ID_Map: buildName_ID_Map,
     buildName_Socket_Map: buildName_Socket_Map,
