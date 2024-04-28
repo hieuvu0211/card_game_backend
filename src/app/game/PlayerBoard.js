@@ -3,10 +3,10 @@ export default function PlayerBoard(props) {
     let boardItems = null
     if(props.players.length > 1) {
         boardItems = props.players.map((player, index) =>
-            <span style={{ backgroundColor: `${player.color}`}} key={index}>
-                <h2>{player.name}</h2>
-                <p>Coins: {player.money}</p>
-                <p>influences: {player.influences.length}</p>
+            <span className="flex flex-col items-center justify-center rounded-md p-2 mx-2 mt-2" style={{ backgroundColor: `${player.color}`}} key={index}>
+                <h2 className=" text-xl">{player.name}</h2>
+                <p className=" text-lg">Coins: {player.money}</p>
+                <p className=" text-lg">influences: {player.influences.length}</p>
             </span>
     )
     }

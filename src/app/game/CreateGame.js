@@ -18,18 +18,19 @@ export default class CreateGame extends Component {
             errorMsg: '',
             canStart: false,
             socket: null,
+            nameIsSet:  false,
         }
     }
     onNameChange = (name) => {
         this.setState({ name });
+
     }
     
     joinParty = () => {
         const bind = this
-        const socket = io(`http://localhost:8080/${this.state.roomCode}`, {
-            path: "/socket",
-            transports: ["websocket"],
-        });
+        console.log("roomCode: ", this.state.roomCode)
+        console.log("Loading: ", this.state.isLoading)
+        const socket = io(`http://localhost:8080/${this.state.roomCode}`);
         
         this.setState({ socket });
         console.log("socket created");
@@ -41,7 +42,8 @@ export default class CreateGame extends Component {
             console.log("join successful")
             bind.setState({ 
                 isLoading: false,
-                isInRoom: true
+                isInRoom: true,
+                nameIsSet: true,
             });
         })
 
@@ -78,12 +80,20 @@ export default class CreateGame extends Component {
         }
 
         this.setState({ isLoading: true });
+        
         const bind = this;
         axios.get(`http://localhost:8080/createNamespace`)
-            .then(function (res) {
+            .then((res) => {
                 console.log(res);
-                bind.setState({ roomCode: res.data.namespace, errorMsg: '' });
-                bind.joinParty();
+                console.log(res.data.namespace);
+                    bind.setState({ roomCode: res.data.namespace, errorMsg: '' 
+                }, () => {
+                    console.log(this.state.roomCode);
+                    this.joinParty();
+                });
+
+
+
             })
             .catch(function (err) {
                 //TODO  handle error
@@ -108,11 +118,13 @@ export default class CreateGame extends Component {
         let roomCode = null;
         let startGame = null;
         let createButton = null;
+        let nameInputUI = null;
         let youCanSort = null;
+        let board = null;
+
         if(!this.state.isInRoom) {
             createButton = <>
-            <button onClick={this.createParty} disabled={this.state.isLoading}>{this.state.isLoading ? 'Creating...': 'Create'}</button>
-            <br></br>
+            <button className='bg-white text-black my-2 px-2 rounded-md hover:bg-green-400' onClick={this.createParty} disabled={this.state.isLoading}>{this.state.isLoading ? 'Creating...': 'Create Room'}</button>
             </>
         }
         if(this.state.isError) {
@@ -121,10 +133,10 @@ export default class CreateGame extends Component {
         if(this.state.canStart) {
             startGame = <button onClick={this.startGame}>Start Game</button>
         }
-        return (
-            <div>
+        if(!this.state.nameIsSet) {
+            nameInputUI = <div className=' flex items-center justify-center flex-col bg-slate-800 min-h-fit w-1/2 rounded-md'>
                 <p>Please enter your name</p>
-                <input className=' text-black'
+                <input className=' text-black my-2 rounded-sm pl-2'
                     type="text" value={this.state.name} disabled={this.state.isLoading || this.state.isInRoom}
                     onChange={e => {
                         if(e.target.value.length <= 10){
@@ -141,12 +153,49 @@ export default class CreateGame extends Component {
                         }
                         
                     }}
+                
                 />
-                <br></br>
                 {createButton}
                 {error}
-                <br></br>
-                <div>
+            </div>
+
+        }else {
+            board = 
+                    // <div className=" min-h-screen flex items-center justify-center w-full">
+                        <div className=" text-cyan-200 font-bold text-xl relative flex flex-col py-2 items-center justify-start min-h-96 h-fit w-full bg-slate-800 rounded-md">
+                            <div>
+                                ROOM ID: {this.state.roomCode}
+                            </div>
+                            <div className="flex flex-row w-full">
+                                <div className=" flex justify-center basis-1/2">Participant Name</div>
+                                <div className=" flex justify-center basis-1/2 ">State</div>
+                            </div>
+
+                            {this.state.players.map((item,index) => {
+                            return (
+                                <div className="flex flex-row w-full mt-2" key={index}>
+                                    <div className=" flex justify-center basis-1/2 ">{item.name}</div>
+                                    <div className=" flex justify-center basis-1/2 ">
+                                        {
+                                            item.isReady
+                                            ? <p className=' bg-green-400 px-2 rounded-md'>Ready!</p>
+                                            : <p className=' bg-red-400 rounded-md'>Not Ready</p>
+                                        }
+                                    </div>
+                                </div>
+                            )
+                            })
+                        }
+                            <div className="absolute bottom-0 mb-2 px-2 rounded-lg text-2xl  bg-green-500">
+                                {startGame}
+                            </div>
+                        </div>
+                    // </div>
+        }
+        return (
+            <div className=' flex items-center justify-center w-1/2 '>
+                { nameInputUI }
+                {/* <div>
                     <ReactSortable list={this.state.players} setList={newState => this.setState({ players: newState })}>
                         {this.state.players.map((item,index) => {
                             let ready = null
@@ -154,7 +203,7 @@ export default class CreateGame extends Component {
                             if(item.isReady) {
                                 ready = <b>Ready!</b>
                                 readyUnitColor = '#73C373'
-                            } else {
+                            } else {    
                                 ready = <b>Not Ready</b>
                             }
                             return (
@@ -165,9 +214,10 @@ export default class CreateGame extends Component {
                             })
                         }
                     </ReactSortable>
-                </div>
-                
-                {startGame}
+
+                </div> */}
+                {board}
+                {/* {startGame} */}
             </div>
         )
     }

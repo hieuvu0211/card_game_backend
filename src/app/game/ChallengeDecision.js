@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-export default class challengeDecision extends Component {
+export default class ChallengeDecision extends Component {
     vote = (isChallenging) => {
         this.props.closeOtherVotes('challenge')
         const res = {

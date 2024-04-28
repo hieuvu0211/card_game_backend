@@ -63,13 +63,13 @@ export default class ActionDecision extends Component {
         } else if(this.props.money < 10) {
             controls = (
                 <>
-                <button onClick={() => this.chooseAction('income')}>Income</button>
-                <button onClick={() => this.deductCoins('coup')}>Coup</button>
-                <button onClick={() => this.chooseAction('foreign_aid')}>Foreign Aid</button>
-                <button id="captain" onClick={() => this.pickingTarget('steal')}>Steal</button>
-                <button id="assassin" onClick={() => this.deductCoins('assassinate')}>Assassinate</button>
-                <button id="duke" onClick={() => this.chooseAction('tax')}>Tax</button>
-                <button id="ambassador" onClick={() => this.chooseAction('exchange')}>Exchange</button>
+                <button className=' font-bold min-w-24 min-h-24 mx-2 bg-orange-600 text-black rounded-md px-2' onClick={() => this.chooseAction('income')}>Income</button>
+                <button className=' font-bold min-w-24 min-h-24 mx-2 bg-orange-600 text-black rounded-md px-2' onClick={() => this.deductCoins('coup')}>Coup</button>
+                <button className=' font-bold min-w-24 min-h-24 mx-2 bg-orange-600 text-black rounded-md px-2' onClick={() => this.chooseAction('foreign_aid')}>Foreign Aid</button>
+                <button className=' font-bold min-w-24 min-h-24 mx-2 bg-blue-600 text-black rounded-md px-2' id="captain" onClick={() => this.pickingTarget('steal')}>Steal</button>
+                <button className=' font-bold min-w-24 min-h-24 mx-2 bg-black text-red-600 rounded-md px-2' id="assassin" onClick={() => this.deductCoins('assassinate')}>Assassinate</button>
+                <button className=' font-bold min-w-24 min-h-24 mx-2 bg-purple-500 text-black rounded-md px-2' id="duke" onClick={() => this.chooseAction('tax')}>Tax</button>
+                <button className=' font-bold min-w-24 min-h-24 mx-2 bg-green-500 text-black rounded-md px-2' id="ambassador" onClick={() => this.chooseAction('exchange')}>Exchange</button>
                 </>
             )
         }
@@ -77,13 +77,13 @@ export default class ActionDecision extends Component {
             controls = <button onClick={() => this.deductCoins('coup')}>Coup</button>
         }
         return (
-            <>
-                <p>Choose an action</p>
+            <div className='flex flex-col items-center justify-center'>
+                <p className=' font-bold  text-3xl my-4'>Choose an action</p>
                 <div>
                     {controls}
                     <p>{this.state.actionError}</p>
                 </div>
-            </>
+            </div>
         )
     }
 }

@@ -13,7 +13,7 @@ export default function RootLayout( {children} ) {
   return (
     <CookiesProvider>
     <html lang="en">
-      <body>
+      <body >
           <ProgressBar
           height="4px"
           color="#7BC9FF"

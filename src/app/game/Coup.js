@@ -1,6 +1,6 @@
 import React, { Component} from "react";
 import ActionDecision from "./ActionDecision";
-import challengeDecision from "./ChallengeDecision";
+import ChallengeDecision from "./ChallengeDecision";
 import BlockChallengeDecision from "./BlockChallengeDecision";
 import PlayerBoard from "./PlayerBoard";
 import RevealDecision from "./RevealDecision";
@@ -47,21 +47,24 @@ export default class Coup extends Component {
             bind.setState({playAgain: null})
             bind.setState({winner: null})
             players = players.filter(x => !x.isDead);
-            let playerIndex = null;
+            let PI = null;
             for(let i=0; i< players.length; i++) {
                 console.log(players[i].name, this.props.name)
                 if(players[i].name === this.props.name) {
-                    playerIndex = i;
+                    PI = i;
                     break;
                 }
             }
-            if(playerIndex == null) {
+            if(PI == null) {
                 this.setState({isDead: true})
             }else {
                 this.setState({isDead: false})
             }
-            console.log(playerIndex)
-            bind.setState({playerIndex, players})
+            console.log("PI: ", PI)
+            console.log(players)
+            bind.setState({playerIndex: PI}, () => { console.log(" alo 123: ", bind.state.playerIndex)});
+            bind.setState({players: players});
+
         });
         this.props.socket.on('game-updateCurrentPlayer', (currentPlayer) => {
             console.log('currentPlayer: ', currentPlayer)
@@ -71,6 +74,10 @@ export default class Coup extends Component {
             bind.setState({ isChooseAction: true})
         });
         this.props.socket.on('game-openExchange', (drawTwo) => {
+            console.log(drawTwo);
+            console.log(" aloooooo 123: ", bind.state.playerIndex);
+            console.log(" aloooooo 456: ", bind.state.players);
+            console.log(" aloooooo 789: ", bind.state.players[bind.state.playerIndex].influences);
             let influences = [...bind.state.players[bind.state.playerIndex].influences, ...drawTwo];
             bind.setState({exchangeInfluence: influences})
         });
@@ -120,6 +127,7 @@ export default class Coup extends Component {
         this.props.socket.on('game-closeBlockChallenge', () => {
             bind.setState({blockChallengeRes: null})
         });
+    }
         deductCoins = (amount) => {
             let res = {
                 source: this.props.name,
@@ -160,6 +168,7 @@ export default class Coup extends Component {
         };
         pass = () => {
             if(this.state.action !== null) {
+                console.log(this.state.action);
                 let res = {
                     isChallenging: false,
                     action: this.state.action,
@@ -183,7 +192,6 @@ export default class Coup extends Component {
             this.doneChallengeBlockingVote();
         }
 
-    }
     influenceColorMap = {
         duke: '#D55DC7',
         captain: '#80C6E5',
@@ -226,7 +234,7 @@ export default class Coup extends Component {
         }
         if(this.state.action != null) {
             isWaiting = false;
-            challengeDecision = <challengeDecision closeOtherVotes={this.closeOtherVotes} doneChallengeVote={this.doneChallengeBlockingVote} name={this.props.name} action={this.state.action} socket={this.props.socket} ></challengeDecision>
+            challengeDecision = <ChallengeDecision closeOtherVotes={this.closeOtherVotes} doneChallengeVote={this.doneChallengeBlockingVote} name={this.props.name} action={this.state.action} socket={this.props.socket} ></ChallengeDecision>
         }
         if(this.state.exchangeInfluence) {
             isWaiting = false;
@@ -242,15 +250,17 @@ export default class Coup extends Component {
         }
         if(this.state.playerIndex != null && !this.state.isDead) {
             influences = <>
-            <p>Your Influences</p>
+            <p className=" flex items-center justify-center text-xl">Your Influences</p>
+            <div className="flex flex-row">
                 {this.state.players[this.state.playerIndex].influences.map((influence, index) => {
-                    return  <div key={index}>
+                    return  <div className=" flex flex-col justify-center items-center basis-1/2 mx-2 mb-2 text-xl" key={index}>
                                 <span style={{backgroundColor: `${this.influenceColorMap[influence]}`}}></span>
                                 <br></br>
-                                <h3>{influence}</h3>
+                                <h3 className=" text-2xl">{influence}</h3>
                             </div>
                     })
                 }
+            </div>
             </>
             
             coins = <p>Coins: {this.state.players[this.state.playerIndex].money}</p>
@@ -268,16 +278,16 @@ export default class Coup extends Component {
             )
         }
         return (
-            <div className="flex items-center justify-center">
-            <div>
+            <div className="flex flex-col items-center justify-center">
+            <div className="flex flex-col item-centers justify-center font-bold bg-stone-300 text-black px-2 pt-2 rounded-md">
                 {influences}
             </div>
             <PlayerBoard players={this.state.players}></PlayerBoard>
-            <div>
+            {actionDecision}
+            <div className=" flex flex-col items-center justify-center">
                 {waiting}
                 {revealDecision}
                 {chooseInfluenceDecision}
-                {actionDecision}
                 {exchangeInfluences}
                 {challengeDecision}
                 {blockChallengeDecision}
