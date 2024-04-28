@@ -1,17 +1,23 @@
-import constants from "./constants";
-import gameutils from "./utils";
 
-class Coup {
+import { Actions, CounterActions } from "./constants.js";
+import { buildDeck,
+        buildName_ID_Map,
+        buildName_Socket_Map,
+        buildPlayers,
+        shuffleArray,
+        exportPlayers} from "./utils.js";
+
+export default class Coup {
     constructor(players, gameSocket) {
-        this.nameSocketMap = gameutils.buildName_Socket_Map(players);
-        this.nameIndexMap = gameutils.buildName_ID_Map(players);
-        this.players = gameutils.buildPlayers(players);
+        this.nameSocketMap = buildName_Socket_Map(players);
+        this.nameIndexMap = buildName_ID_Map(players);
+        this.players = buildPlayers(players);
         this.gameSocket = gameSocket;
         this.currentPlayer = 0;
-        this.deck = gameutils.buildDeck();
+        this.deck = buildDeck();
         this.winner = '';
-        this.actions = constants.Actions;
-        this.counterActions = constants.CounterActions;
+        this.actions = Actions;
+        this.counterActions = CounterActions;
         this.isChallengeBlockOpen = false; //nghe challenge va block
         this.isRevealOpen = false; //nghe Reveal
         this.isChooseInfluenceOpen = false; //nghe hanh dong -1 influ khi action that bai
@@ -28,9 +34,10 @@ class Coup {
         this.isExchangeOpen = false;
         this.aliveCount = this.players.length;
         this.votes = 0;
-        this.deck = gameutils.buildDeck();
+        this.deck = buildDeck();
         for (let i = 0; i < this.players.length; i++) {
             this.players[i].money = 2;
+            console.log(this.deck)
             this.players[i].influences = [this.deck.pop(), this.deck.pop()]
             this.players[i].isDead = false;
         }
@@ -42,8 +49,9 @@ class Coup {
         //source
         //target
         //amount
-        this.players.map(x => {
-            const socket = this.gameSocket.sockets[x.socket_ID];
+        this.players.map(x => {     
+            // console.log("socketID: ", x.socketID, "socket: ", this.gameSocket.sockets.get(x.socketID));
+            const socket = this.gameSocket.sockets.get(x.socketID);
             let bind = this
 
             socket.on('game-playAgain', () => {
@@ -55,7 +63,7 @@ class Coup {
                 }
             })
 
-            socket.on('game-delCoin', (res) => {
+            socket.on('game-deductCoins', (res) => {
                 console.log("Del " + res.amount + ' coins from ' + res.source)
                 const sourceIndex = bind.nameIndexMap[res.source];
                 bind.players[sourceIndex].money -= res.amount;
@@ -66,7 +74,7 @@ class Coup {
                 console.log("game-actionDecision: ", res)
                 if (bind.actions[res.action.action].isChallengeable) { //neu co challenge duoc
                     bind.openChallenge(res.action, (bind.actions[res.action.action].blockableBy.length > 0))
-                } else if (res.action.action == 'foriegn_aid') {
+                } else if (res.action.action == 'foreign_aid') {
                     bind.isChallengeBlockOpen = true;
                     bind.gameSocket.emit("game-openBlock", res.action);
                 } else {
@@ -148,7 +156,7 @@ class Coup {
                             for (let i = 0; i < bind.players[challengeeIndex].influences.length; i++) { //replace revealed card with another
                                 if (bind.players[challengeeIndex].influences[i] == res.revealedCard) {
                                     bind.deck.push(bind.players[challengeeIndex].influences[i]);
-                                    bind.deck = gameUtils.shuffleArray(bind.deck);
+                                    bind.deck = shuffleArray(bind.deck);
                                     bind.players[challengeeIndex].influences.splice(i, 1);
                                     bind.players[challengeeIndex].influences.push(bind.deck.pop());
                                     break;
@@ -164,7 +172,7 @@ class Coup {
                             for (let i = 0; i < bind.players[challengeeIndex].influences.length; i++) {
                                 if (bind.players[challengeeIndex].influences[i] == res.revealedCard) { //xóa revealcard của người bị challenge action block
                                     bind.deck.push(bind.players[challengeeIndex].influences[i]);
-                                    bind.deck = gameUtils.shuffleArray(bind.deck);
+                                    bind.deck = shuffleArray(bind.deck);
                                     bind.players[challengeeIndex].influences.splice(i, 1);
                                     break;
                                 }
@@ -179,7 +187,7 @@ class Coup {
                             for (let i = 0; i < bind.players[challengeeIndex].influences.length; i++) { //revealed card needs to be replaced
                                 if (bind.players[challengeeIndex].influences[i] == res.revealedCard) {
                                     bind.deck.push(bind.players[challengeeIndex].influences[i]);
-                                    bind.deck = gameUtils.shuffleArray(bind.deck);
+                                    bind.deck = shuffleArray(bind.deck);
                                     bind.players[challengeeIndex].influences.splice(i, 1);
                                     bind.players[challengeeIndex].influences.push(bind.deck.pop());
                                     break;
@@ -190,7 +198,7 @@ class Coup {
                             if (res.revealedCard == 'assassin' && res.prevAction.target == res.challenger
                                 && bind.players[challengerIndex].influences.length == 2) {
                                 bind.deck.push(bind.players[challengeeIndex].influences[0]);
-                                bind.deck = gameUtils.shuffleArray(bind.deck);
+                                bind.deck = shuffleArray(bind.deck);
                                 bind.players[challengerIndex].influences.splice(0, 1);
                             }
 
@@ -204,7 +212,7 @@ class Coup {
                             for (let i = 0; i < bind.players[challengeeIndex].influences.length; i++) { // 
                                 if (bind.players[challengeeIndex].influences[i] == res.revealedCard) {
                                     bind.deck.push(bind.players[challengeeIndex].influences[i]);
-                                    bind.deck = gameUtils.shuffleArray(bind.deck);
+                                    bind.deck = shuffleArray(bind.deck);
                                     bind.players[challengeeIndex].influences.splice(i, 1);
                                     break;
                                 }
@@ -224,7 +232,7 @@ class Coup {
                     for (let i = 0; i < bind.players[playerIndex].influences.length; i++) {
                         if (bind.players[playerIndex].influences[i] == res.influence) {
                             bind.deck.push(bind.players[playerIndex].influences[i]);
-                            bind.deck = gameutils.shuffleArray(bind.deck);
+                            bind.deck = shuffleArray(bind.deck);
                             bind.players[playerIndex].influences.splice(i, 1);
                             break;
                         }
@@ -242,7 +250,7 @@ class Coup {
                     bind.players[playerIndex].influences = res.kept;
                     bind.deck.push(res.putBack[0]);
                     bind.deck.push(res.putBack[1]);
-                    bind.deck = gameutils.shuffleArray(bind.deck);
+                    bind.deck = shuffleArray(bind.deck);
                     bind.isExchangeOpen = false;
                     bind.nextTurn();
                 }
@@ -251,7 +259,7 @@ class Coup {
     }
 
     updatePlayers() {
-        this.gameSocket.emit("game-updatePlayer", gameutils.exportPlayers(JSON.parse(JSON.stringify(this.players))));
+        this.gameSocket.emit("game-updatePlayers", exportPlayers(JSON.parse(JSON.stringify(this.players))));
     }
 
 
@@ -372,12 +380,14 @@ class Coup {
             }
             this.nextTurn();
         } else if (execute == 'steal') {
-            let stolen = '';
+            let stolen = 0;
             for (let i = 0; i < this.players.length; i++) {
                 if (target == this.players[i].name) {
                     if (this.players[i].money >= 2) {
+                        this.players[i].money-=2;
                         stolen = 2;
                     } else if (this.players[i].money == 1) {
+                        this.players[i].money-=1;
                         stolen = 1;
                     } else {
                         //cant stolen
@@ -393,9 +403,9 @@ class Coup {
             }
             this.nextTurn();
         } else if (execute == 'exchange') {
-            const drawTwoCard = [this.deck.pop(), this.deck.pop()];
+            const drawTwo = [this.deck.pop(), this.deck.pop()];
             this.isExchangeOpen = true;
-            this.gameSocket.to(this.nameSocketMap[source]).emit('game-openExchange', drawTwoCard);
+            this.gameSocket.to(this.nameSocketMap[source]).emit('game-openExchange', drawTwo);
 
             //next Turn after chooseExchangeDecision
         } else {
@@ -415,8 +425,8 @@ class Coup {
                     x.isDead = true;
                     x.money = 0;
                 }
-            })
-        }
+            });
+        
         this.updatePlayers();
         //kiem tra so nguoi song
         if (this.aliveCount == 1) {
@@ -437,6 +447,7 @@ class Coup {
             } while (this.players[this.currentPlayer].isDead == true);
             this.playTurn();
         }
+    }
     }
 
     playTurn() {
@@ -460,4 +471,4 @@ class Coup {
     }
 }
 
-module.exports = Coup;
+// module.exports = Coup;

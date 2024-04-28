@@ -1,11 +1,12 @@
-const constanst = require("./constants")
 
-buildDeck = () => {
+import { CardNames } from "./constants.js";
+
+const buildDeck = () => {
     //create deck
     let deck = [];
-    let cardNames = constants.CardNames.values();
+    let cardNames = CardNames.values();
     //add card
-    for (let card in cardNames) {
+    for (let card of cardNames) {
         addToDeck(card, deck)
     }
 
@@ -28,18 +29,18 @@ function addToDeck(card, deck) {
     }
 }
 
-shuffleArray = (arr) => {
+const shuffleArray = (array) => {
     let currentIndex = array.length;
     while (currentIndex !== 0) {
         let randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
         [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
-    return arr;
+    return array;
 }
 
 //build 1 dictionary giua ten nguoi choi va socketID
-buildName_Socket_Map = (players) => {
+const buildName_Socket_Map = (players) => {
     let map = {}
     players.map((x) => {
         map[x.name] = x.socketID
@@ -48,7 +49,7 @@ buildName_Socket_Map = (players) => {
 }
 
 //build 1 dictionary giua ten nguoi choi va index cua ho
-buildName_ID_Map = (players) => {
+const buildName_ID_Map = (players) => {
     let map = {}
     players.map((x, index) => {
         map[x.name] = index
@@ -56,8 +57,8 @@ buildName_ID_Map = (players) => {
     return map;
 }
 
-buildPlayers = (players) => {
-    colors = ["#73C373", "#CF3131", "#31CFC8", "#2B55B6", "#AE2BB6", "#D8DB26"]
+const buildPlayers = (players) => {
+    const colors = ["#73C373", "#CF3131", "#31CFC8", "#2B55B6", "#AE2BB6", "#D8DB26"]
     //suffle ngau nhien
     shuffleArray(colors);
 
@@ -68,22 +69,27 @@ buildPlayers = (players) => {
         x.color = colors.pop();
         delete x.isReady;
     });
-
+    return players;
 }
 
-exportPlayers = (players) => {
+const exportPlayers = (players) => {
     players.forEach(x => {
         delete x.socketID;
     });
     return players;
 }
 
-
-module.exports = {
-    buildDeck: buildDeck,
-    buildName_ID_Map: buildName_ID_Map,
-    buildName_Socket_Map: buildName_Socket_Map,
-    buildPlayers: buildPlayers,
-    shuffleArray: shuffleArray,
-    exportPlayers: exportPlayers,
-}
+export { buildDeck,
+    buildName_ID_Map,
+    buildName_Socket_Map,
+    buildPlayers,
+    shuffleArray,
+    exportPlayers}
+// module.exports = {
+//     buildDeck: buildDeck,
+//     buildName_ID_Map: buildName_ID_Map,
+//     buildName_Socket_Map: buildName_Socket_Map,
+//     buildPlayers: buildPlayers,
+//     shuffleArray: shuffleArray,
+//     exportPlayers: exportPlayers,
+// }

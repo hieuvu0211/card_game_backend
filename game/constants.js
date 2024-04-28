@@ -1,3 +1,4 @@
+
 //Khoi tao gia tri mac dinh ten cua la bai
 const CardNames = {
     DUKE: "duke",
@@ -22,7 +23,7 @@ const Actions = {
         name: "Thu Thập",
         influence: "all",
         blockableBy: [],
-        isChallengable: false,
+        isChallengeable: false,
         moneyDelta: 1
     },
 
@@ -30,7 +31,7 @@ const Actions = {
         name: "Viện Trợ",
         influence: "all",
         blockableBy: [CardNames.DUKE],
-        isChallengable: false,
+        isChallengeable: false,
         moneyDelta: 2
     },
 
@@ -38,7 +39,7 @@ const Actions = {
         name: "Coup",
         influence: "all",
         blockableBy: [],
-        isChallengable: false,
+        isChallengeable: false,
         moneyDelta: -7
     },
 
@@ -46,7 +47,7 @@ const Actions = {
         name: "Thu Thuế",
         influence: CardNames.DUKE,
         blockableBy: [],
-        isChallengable: true,
+        isChallengeable: true,
         moneyDelta: 3
     },
 
@@ -54,7 +55,7 @@ const Actions = {
         name: "Ám Sát",
         influence: CardNames.ASSASIN,
         blockableBy: [CardNames.CONTESSA],
-        isChallengable: true,
+        isChallengeable: true,
         moneyDelta: -3
     },
 
@@ -62,7 +63,7 @@ const Actions = {
         name: "Cướp",
         influence: CardNames.CAPTAIN,
         blockableBy: [CardNames.CAPTAIN, CardNames.AMBASSADOR],
-        isChallengable: true,
+        isChallengeable: true,
         moneyDelta: 2
     },
 
@@ -70,7 +71,7 @@ const Actions = {
         name: "Giả Danh",
         influence: CardNames.AMBASSADOR,
         blockableBy: [],
-        isChallengable: true,
+        isChallengeable: true,
         moneyDelta: 0
     }
 };
@@ -86,9 +87,9 @@ const CounterActions = {
         influence: [CardNames.CAPTAIN, CardNames.AMBASSADOR]
     }
 }
-
-module.exports = {
-    CardNames: CardNames,
-    Actions: Actions,
-    CounterActions: CounterActions
-}
+export { CardNames, Actions, CounterActions }
+// module.exports = {
+//     CardNames: CardNames,
+//     Actions: Actions,
+//     CounterActions: CounterActions
+// }
