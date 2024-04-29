@@ -79,17 +79,11 @@ const exportPlayers = (players) => {
     return players;
 }
 
-export { buildDeck,
+export {
+    buildDeck,
     buildName_ID_Map,
     buildName_Socket_Map,
     buildPlayers,
     shuffleArray,
-    exportPlayers}
-// module.exports = {
-//     buildDeck: buildDeck,
-//     buildName_ID_Map: buildName_ID_Map,
-//     buildName_Socket_Map: buildName_Socket_Map,
-//     buildPlayers: buildPlayers,
-//     shuffleArray: shuffleArray,
-//     exportPlayers: exportPlayers,
-// }
+    exportPlayers
+}

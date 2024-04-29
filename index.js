@@ -51,7 +51,7 @@ import {
   updateDepositById,
 } from "./controllers/depositController.js";
 
-import CoupGame from "./game/coup.js"
+import Coup from "./game/coup.js"
 
 const app = express();
 const server = createServer(app);
@@ -137,13 +137,6 @@ app.get("/createNamespace", function (req, res) { //create ROOM
     }
     newNamespace = result;
   }
-
-  //create GameSocket
-  // io.of(`/${newNamespace}`).on("connection", (socket) => {
-  //   console.log("test:", socket.id)
-  // })
-  //create RoomSocket included GameSocket
-  // console.log("newsocket:", newSocket, "namespace: ", newNamespace);
   openSocket(`/${newNamespace}`);
   console.log("openSocket:", openSocket)
   namespaces[newNamespace] = null;
@@ -151,7 +144,7 @@ app.get("/createNamespace", function (req, res) { //create ROOM
   res.json({ namespace: newNamespace })
 });
 
-app.get("/:exists/:namespace", function (req, res) { //get exist ROOM
+app.get("/exists/:namespace", function (req, res) { //get exist ROOM
   const namespace = req.params.namespace;
   res.json({ exists: (namespace in namespaces) });
 })
@@ -166,7 +159,7 @@ const openSocket = (namespace) => {
   let partyLeader = "";
   let started = false; //game Status
   //connection to room
-  
+
   gameSocket.on("connection", (socket) => {
     console.log("id: ", socket.id);
     players.push({ //add player
@@ -245,7 +238,9 @@ const openSocket = (namespace) => {
             console.log("Leader disconnected");
             gameSocket.emit('leaderDisconnect', "leader_disconnect");
             socket.removeAllListeners();
-            delete io.nsps[`/${namespace}`];
+            // if (io.nsps[`${namespace}`]) {
+            //   delete io.nsps[`${namespace}`];
+            // }
             delete namespaces[namespace.substring(1)]
             players = [];
             partyMembers = []
@@ -275,7 +270,7 @@ const openSocket = (namespace) => {
 }
 
 const startGame = (players, gameSocket, namespace) => {
-  namespaces[namespace.substring(1)] = new CoupGame(players, gameSocket);
+  namespaces[namespace.substring(1)] = new Coup(players, gameSocket);
   namespaces[namespace.substring(1)].start();
 }
 

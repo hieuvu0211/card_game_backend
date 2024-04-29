@@ -88,8 +88,3 @@ const CounterActions = {
     }
 }
 export { CardNames, Actions, CounterActions }
-// module.exports = {
-//     CardNames: CardNames,
-//     Actions: Actions,
-//     CounterActions: CounterActions
-// }

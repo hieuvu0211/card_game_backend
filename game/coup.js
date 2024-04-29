@@ -1,11 +1,13 @@
 
 import { Actions, CounterActions } from "./constants.js";
-import { buildDeck,
-        buildName_ID_Map,
-        buildName_Socket_Map,
-        buildPlayers,
-        shuffleArray,
-        exportPlayers} from "./utils.js";
+import {
+    buildDeck,
+    buildName_ID_Map,
+    buildName_Socket_Map,
+    buildPlayers,
+    shuffleArray,
+    exportPlayers
+} from "./utils.js";
 
 export default class Coup {
     constructor(players, gameSocket) {
@@ -49,7 +51,7 @@ export default class Coup {
         //source
         //target
         //amount
-        this.players.map(x => {     
+        this.players.map(x => {
             // console.log("socketID: ", x.socketID, "socket: ", this.gameSocket.sockets.get(x.socketID));
             const socket = this.gameSocket.sockets.get(x.socketID);
             let bind = this
@@ -120,11 +122,18 @@ export default class Coup {
 
             socket.on('game-blockDecision', (res) => {
                 console.log("game-blockDecision: ", res)
-                // res.prevAction.action, res.prevAction.target, res.prevAction.source, res.counterAction, res.blockee, res.blocker, res.isBlocking
+                console.log("challengeBlockOpen ? ", bind.isChallengeBlockOpen);
+                // res.prevAction.action, 
+                // res.prevAction.target, 
+                // res.prevAction.source,
+                // res.counterAction, 
+                // res.blockee, 
+                // res.blocker, 
+                // res.isBlocking
                 if (bind.isChallengeBlockOpen) {
                     if (res.isBlocking) {
                         bind.closeChallenge();
-                        bind.gameSocket.emit("g-addLog", `${res.blocker} blocked ${res.blockee}`)
+                        bind.gameSocket.emit("game-addLog", `${res.blocker} blocked ${res.blockee}`)
                         bind.openBlockChallenge(res.counterAction, res.blockee, res.prevAction);
                     } else if (bind.votes + 1 == bind.aliveCount - 1) {
                         //then it is a pass
@@ -384,10 +393,10 @@ export default class Coup {
             for (let i = 0; i < this.players.length; i++) {
                 if (target == this.players[i].name) {
                     if (this.players[i].money >= 2) {
-                        this.players[i].money-=2;
+                        this.players[i].money -= 2;
                         stolen = 2;
                     } else if (this.players[i].money == 1) {
-                        this.players[i].money-=1;
+                        this.players[i].money -= 1;
                         stolen = 1;
                     } else {
                         //cant stolen
@@ -426,28 +435,28 @@ export default class Coup {
                     x.money = 0;
                 }
             });
-        
-        this.updatePlayers();
-        //kiem tra so nguoi song
-        if (this.aliveCount == 1) {
-            let winner = null
-            for (let i = 0; i < this.players.length; i++) {
-                if (this.players[i].influences.length > 0) {
-                    winner = this.players[i].name;
+
+            this.updatePlayers();
+            //kiem tra so nguoi song
+            if (this.aliveCount == 1) {
+                let winner = null
+                for (let i = 0; i < this.players.length; i++) {
+                    if (this.players[i].influences.length > 0) {
+                        winner = this.players[i].name;
+                    }
                 }
+                this.isPlayAgainOpen = true;
+                this.gameSocket.emit("game-gameOver", winner);
+                //END
+            } else {
+                //next Turn
+                do {
+                    this.currentPlayer += 1;
+                    this.currentPlayer %= this.players.length;
+                } while (this.players[this.currentPlayer].isDead == true);
+                this.playTurn();
             }
-            this.isPlayAgainOpen = true;
-            this.gameSocket.emit("game-gameOver", winner);
-            //END
-        } else {
-            //next Turn
-            do {
-                this.currentPlayer += 1;
-                this.currentPlayer %= this.players.length;
-            } while (this.players[this.currentPlayer].isDead == true);
-            this.playTurn();
         }
-    }
     }
 
     playTurn() {
@@ -471,4 +480,4 @@ export default class Coup {
     }
 }
 
-// module.exports = Coup;
+export { Coup }
