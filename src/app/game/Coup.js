@@ -27,7 +27,7 @@ export default class Coup extends Component {
             logs: [],
             isDead: false,
             waiting: true,
-            disconnected: false,
+            disconnected: false
         }
         const bind = this;
         this.playAgainButton = <>
@@ -48,7 +48,7 @@ export default class Coup extends Component {
             bind.setState({winner: null})
             players = players.filter(x => !x.isDead);
             let PI = null;
-            for(let i=0; i< players.length; i++) {
+            for(let i = 0; i < players.length; i++) {
                 console.log(players[i].name, this.props.name)
                 if(players[i].name === this.props.name) {
                     PI = i;
@@ -75,10 +75,8 @@ export default class Coup extends Component {
         });
         this.props.socket.on('game-openExchange', (drawTwo) => {
             console.log(drawTwo);
-            console.log(" aloooooo 123: ", bind.state.playerIndex);
-            console.log(" aloooooo 456: ", bind.state.players);
-            console.log(" aloooooo 789: ", bind.state.players[bind.state.playerIndex].influences);
-            let influences = [...bind.state.players[bind.state.playerIndex].influences, ...drawTwo];
+
+            let influences = drawTwo;
             bind.setState({exchangeInfluence: influences})
         });
         this.props.socket.on('game-openChallenge', (action) => {
@@ -171,7 +169,7 @@ export default class Coup extends Component {
                 console.log(this.state.action);
                 let res = {
                     isChallenging: false,
-                    action: this.state.action,
+                    action: this.state.action
                 }
                 console.log(res)
                 this.props.socket.emit('game-challengeDecision', res);
@@ -184,7 +182,7 @@ export default class Coup extends Component {
             }else if(this.state.blockingAction !== null) {
                 const res = {
                     action: this.state.blockingAction,
-                    isBlocking: false,
+                    isBlocking: false
                 }
                 console.log(res);
                 this.props.socket.emit('game-blockDecision', res);

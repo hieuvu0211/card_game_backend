@@ -9,13 +9,13 @@ export default class ExchangeInfluences extends Component {
         }
     }
     selectInfluence = (index) => {
-        this.state.keep(this.state.influences.splice(index, 1)[0])
-        this.setState({ influences: this.state.influences, putback: this.state.putback})
+        this.state.keep.push(this.state.influences.splice(index, 1)[0])
+        this.setState({ influences: this.state.influences, putBack: this.state.putback})
         if(this.state.keep.length === (this.state.totalInf-2)) {
             const res = {
                 playerName: this.props.name,
                 kept: this.state.keep,
-                putback: this.state.influences
+                putBack: this.state.influences
             }
             this.props.socket.emit('game-chooseExchangeDecision', res);
             this.props.doneExchangeInfluence();
