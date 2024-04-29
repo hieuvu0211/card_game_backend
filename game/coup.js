@@ -268,6 +268,8 @@ export default class Coup {
     }
 
     updatePlayers() {
+        console.log("Test Exchangeeeeeeeeeeeeeeee: ", this.players);
+        console.log("JSON: ", JSON.parse(JSON.stringify(this.players)));
         this.gameSocket.emit("game-updatePlayers", exportPlayers(JSON.parse(JSON.stringify(this.players))));
     }
 
@@ -414,7 +416,20 @@ export default class Coup {
         } else if (execute == 'exchange') {
             const drawTwo = [this.deck.pop(), this.deck.pop()];
             this.isExchangeOpen = true;
-            this.gameSocket.to(this.nameSocketMap[source]).emit('game-openExchange', drawTwo);
+            let targetIndex = 0;
+            for (let i = 0; i < this.players.length; i++) {
+                if (this.players[i].name == action.source) {
+                    targetIndex = i;
+                    break;
+                }
+            }
+            console.log("execute == exchange log: ");
+            console.log(drawTwo);
+            console.log(this.players[targetIndex]);
+            console.log([...this.players[targetIndex].influences, ...drawTwo]);
+            const list = [...this.players[targetIndex].influences, ...drawTwo];
+            console.log(list);
+            this.gameSocket.to(this.nameSocketMap[source]).emit('game-openExchange', (list));
 
             //next Turn after chooseExchangeDecision
         } else {
