@@ -39,7 +39,7 @@ export default class ActionDecision extends Component {
                 this.pickingTarget('coup');
             }
             else {
-                this.setState({ actionError: 'Mot enough coins to coup!'})
+                this.setState({ actionError: 'Not enough coins to coup!'})
             }
         }
     }
@@ -58,7 +58,7 @@ export default class ActionDecision extends Component {
         let controls = null
         if(this.state.isPickingTarget) {
             controls = this.props.players.filter(x => !x.isDead).filter(x => x.name !== this.props.name).map((x, index) => {
-                return <button style={{ backgroundColor: x.color}} key={index} onClick={() => this.pickTarget(x.name)}>{x.name}</button>
+                return <button className=' hover:bg-slate-500 hover:border-slate-500 rounded-md w-60' key={index} onClick={() => this.pickTarget(x.name)}>{x.name}</button>
             })
         } else if(this.props.money < 10) {
             controls = (
@@ -78,11 +78,11 @@ export default class ActionDecision extends Component {
         }
         return (
             <div className='flex flex-col items-center justify-center'>
-                <p className=' font-bold  text-3xl my-4'>Choose an action</p>
+                <p className=' font-bold  text-3xl mb-4'>Choose an action</p>
                 <div>
                     {controls}
-                    <p>{this.state.actionError}</p>
                 </div>
+                <p className=' font-bold mt-2'>{this.state.actionError}</p>
             </div>
         )
     }

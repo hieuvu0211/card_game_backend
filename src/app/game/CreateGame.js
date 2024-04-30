@@ -112,7 +112,9 @@ export default class CreateGame extends Component {
     }
     render() {
         if(this.state.isGameStarted) {
-            return (<Coup name={this.state.name} socket={this.state.socket}></Coup>)
+            return (
+                <Coup name={this.state.name} socket={this.state.socket}></Coup>
+            )
         }
         let error = null;
         let roomCode = null;
@@ -195,29 +197,7 @@ export default class CreateGame extends Component {
         return (
             <div className=' flex items-center justify-center w-1/2 '>
                 { nameInputUI }
-                {/* <div>
-                    <ReactSortable list={this.state.players} setList={newState => this.setState({ players: newState })}>
-                        {this.state.players.map((item,index) => {
-                            let ready = null
-                            let readyUnitColor = '#E46258'
-                            if(item.isReady) {
-                                ready = <b>Ready!</b>
-                                readyUnitColor = '#73C373'
-                            } else {    
-                                ready = <b>Not Ready</b>
-                            }
-                            return (
-                                    <div style={{backgroundColor: readyUnitColor}} key={index}>
-                                        <p >{index+1}. {item.name} {ready}</p>
-                                    </div>
-                            )
-                            })
-                        }
-                    </ReactSortable>
-
-                </div> */}
                 {board}
-                {/* {startGame} */}
             </div>
         )
     }

@@ -27,7 +27,7 @@ export default class ChallengeDecision extends Component {
         return (
             <>
                 {this.challengeText(this.props.action.action, this.props.action.source, this.props.action.target)}
-                <button onClick={() => this.vote(true)}>Challenge</button>
+                <button className=' w-60 hover:bg-slate-500 hover:border-slate-500 rounded-md' onClick={() => this.vote(true)}>Challenge</button>
             </>
         )
     }

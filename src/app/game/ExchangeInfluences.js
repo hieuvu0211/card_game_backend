@@ -23,12 +23,15 @@ export default class ExchangeInfluences extends Component {
     }
     render() {
         const influences = this.state.influences.map((x, index) => {
-            return <button key={index} onClick={() => this.selectInfluence(index)}>{x}</button>
+            return <button className=" w-24 hover:bg-slate-500 hover:border-slate-500 rounded-md" key={index} onClick={() => this.selectInfluence(index)}>{x}</button>
         })
         return (
-            <div>
-                <p>Choose which influence(s) to keep</p>
+            <div className=" flex flex-col items-center justify-center">
+                <p className=" font-bold my-2">Choose which influence(s) to keep</p>
+                <div className=" grid grid-cols-2 grid-rows-2">
                 {influences}
+                </div>
+
             </div>
         )
     }

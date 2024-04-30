@@ -7,7 +7,9 @@ import RevealDecision from "./RevealDecision";
 import BlockDecision from "./BlockDecision";
 import ChooseInfluence from "./ChooseInfluence";
 import ExchangeInfluences from "./ExchangeInfluences";
+import EventLog from "./EventLog";
 export default class Coup extends Component {
+    
     constructor(props) {
         super(props)
         this.state = {
@@ -32,9 +34,9 @@ export default class Coup extends Component {
         const bind = this;
         this.playAgainButton = <>
         <br></br>
-        <button onClick={() => {
+        <button className=" hover:bg-slate-500 hover:border-slate-500 rounded-md" onClick={() => {
             this.props.socket.emit('game-playAgain');
-        }}>PlayAgain</button>
+        }}>Play Again</button>
         </>
         this.props.socket.on('disconnect', reason => {
             this.setState({disconnected: true});
@@ -70,6 +72,24 @@ export default class Coup extends Component {
             console.log('currentPlayer: ', currentPlayer)
             bind.setState({currentPlayer})
         });
+        this.props.socket.on('game-addLog', (log) => {
+            let splitLog=  log.split(' ');
+            let coloredLog = [];
+            coloredLog = splitLog.map((item, index) => {
+                let found = null
+                bind.state.players.forEach(player => {
+                    if(item === player.name){
+                        found = <b style={{color: player.color}}>{player.name} </b>;
+                    }
+                })
+                if(found){
+                    return found;
+                }
+                return <>{item+' '}</>
+            })
+            bind.state.logs = [...bind.state.logs, coloredLog]
+            bind.setState({logs :bind.state.logs})
+        });
         this.props.socket.on('game-chooseAction', () => {
             bind.setState({ isChooseAction: true})
         });
@@ -93,8 +113,15 @@ export default class Coup extends Component {
             if(this.state.isDead) {
                 return
             }
+            // console.log(blockChallengeRes);
+            // console.log("bind.props.name: ", bind.props.name);
             if(blockChallengeRes.counterAction.source !== bind.props.name) {
-                bind.setState({blockChallengeRes})
+                console.log("EQUAL!")
+                bind.setState({blockChallengeRes}, () => {
+                    console.log("this.state.blockChallengeRes: ", this.state.blockChallengeRes);
+                })
+
+
             }else {
                 bind.setState({blockChallengeRes: null})
             }
@@ -189,6 +216,9 @@ export default class Coup extends Component {
             }
             this.doneChallengeBlockingVote();
         }
+        openRules = () => {
+            onOpen();
+        }
 
     influenceColorMap = {
         duke: '#D55DC7',
@@ -228,7 +258,7 @@ export default class Coup extends Component {
             chooseInfluenceDecision = <ChooseInfluence doneChooseInfluence={this.doneChooseInfluence} name ={this.props.name} socket={this.props.socket} influences={this.state.players.filter(x => x.name === this.props.name)[0].influences}></ChooseInfluence>
         }
         if(this.state.action != null || this.state.blockChallengeRes != null || this.state.blockingAction !== null){
-            pass = <button onClick={() => this.pass()}>Pass</button>
+            pass = <button className=" w-60 rounded-md hover:bg-slate-500 hover:border-slate-500" onClick={() => this.pass()}>Pass</button>
         }
         if(this.state.action != null) {
             isWaiting = false;
@@ -264,7 +294,7 @@ export default class Coup extends Component {
             coins = <p>Coins: {this.state.players[this.state.playerIndex].money}</p>
         }
         if(isWaiting && !this.state.isDead) {
-            waiting = <p>Waiting for other players...</p>
+            waiting = <p className=" mt-2 font-bold">Waiting for other players...</p>
         }
         if(this.state.disconnected) {
             return (
@@ -276,7 +306,12 @@ export default class Coup extends Component {
             )
         }
         return (
-            <div className="flex flex-col items-center justify-center">
+            
+            <div className=" flex flex-1 flex-col items-center justify-center bg-slate-800 rounded-md w-2/3">
+                <div className=" absolute top-0 left-0 pt-10 pl-2 w-60 opacity-75 rounded-br-md text-white bg-slate-800">
+                <EventLog  logs={this.state.logs}></EventLog>
+                </div>
+
             <div className="flex flex-col item-centers justify-center font-bold bg-stone-300 text-black px-2 pt-2 rounded-md">
                 {influences}
             </div>
@@ -296,6 +331,7 @@ export default class Coup extends Component {
             <b>{this.state.winner}</b>
             {this.state.playAgain}
             </div>
+
         )
     }
 }

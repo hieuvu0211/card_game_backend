@@ -9,7 +9,6 @@ export default function Home() {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const [chat, setChat] = useState("");
   const [data, setData] = useState([]);
-  const [visible, setVisible] = useState();
   const handleKeyDown = (e) => {
     if(e.key === "Enter") {
       if (chat==="/d") {
@@ -26,13 +25,7 @@ export default function Home() {
 
 
   const handleModal = () => {
-    if (visible==="invisible") {
-      setVisible("visible");
-      
-    }
-    else{
-      setVisible("invisible");
-    }
+    onOpen();
     
   }
   console.log(data);
@@ -55,7 +48,7 @@ export default function Home() {
         <div className=" flex flex-col w-full p-2 m-1 items-center justify-center">
           <div className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">FIND GAME</div>
           <Link className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl" href='/create_room'>CREATE ROOM</Link>
-          <Link href="/find_room" className={` ${visible} bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl`}>FIND ROOM</Link>
+          <Link href="/find_room" className={" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl"}>FIND ROOM</Link>
           <button onClick={() => handleModal()} className=" bg-gray-900 hover:bg-slate-300 hover:text-gray-900 shadow-black shadow-md font-bold m-1 w-96 h-14 flex justify-center items-center rounded-3xl">RULES</button>
         </div>
     </div>

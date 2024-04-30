@@ -28,12 +28,15 @@ export default class RevealDecision extends Component {
         }
         render() {
             const influences = this.props.influences.map((x, index) => {
-                return <button id={x} key={index} onClick={() => this.selectInfluence(x)}>{x}</button>
+                return <button className=" mx-2 hover:bg-slate-500 hover:border-slate-500 rounded-md w-28" id={x} key={index} onClick={() => this.selectInfluence(x)}>{x}</button>
             })
             return (
                 <div>
-                    <p>Your <b>{this.act}</b> has been chanllenged! If you don't reveal {this.actionMap[this.act].join(' or ')} you'll lose influence!</p>
+                    <p className=" font-bold my-2">Your <b>{this.act}</b> has been chanllenged! If you don't reveal {this.actionMap[this.act].join(' or ')} you'll lose influence!</p>
+                    <div className=" flex flex-row items-center justify-center">
                     {influences}
+                    </div>
+
                 </div>
             )
         }

@@ -72,28 +72,28 @@ export default class BlockDecision extends Component {
             if(this.props.action.action === 'foreign_aid') {
                 control = <>
                 <p><b>{this.props.action.source} is trying to use Foreign Aid</b></p>
-                <button onClick={() => this.block('block_foreign_aid')}>Block Foreign Aid</button>
+                <button className=' px-2 w-60 rounded-md hover:bg-slate-500 hover:border-slate-500  my-2' onClick={() => this.block('block_foreign_aid')}>Block Foreign Aid</button>
                 </>
             }
             else if(this.props.action.action === 'steal') {
-                control = <button onClick={() => this.pickClaim('block_steal')}>Block Steal</button>
+                control = <button className=' px-2 w-60 rounded-md hover:bg-slate-500 hover:border-slate-500 mb-2' onClick={() => this.pickClaim('block_steal')}>Block Steal</button>
             }
             else if(this.props.action.action === 'assassinate') {
-                control = <button onClick={() => this.block('block_assassinate')}>Block Assassination</button>
+                control = <button className=' px-2 w-60 rounded-md hover:bg-slate-500 hover:border-slate-500 mb-2' onClick={() => this.block('block_assassinate')}>Block Assassination</button>
             }
         }
         else {
             pickClaim = <>
-            <p>To block steal, do you claim Ambassador or Captain?</p>
-            <button onClick={() => this.block(this.state.decision, 'ambassador')}>Ambassador</button>
-            <button onClick={() => this.block(this.state.decision, 'captain')}>Captain</button>
+            <p className=' font-bold'>To block steal, do you claim Ambassador or Captain?</p>
+            <button className=' px-2 w-60 rounded-md hover:bg-slate-500 hover:border-slate-500  mt-2' onClick={() => this.block(this.state.decision, 'ambassador')}>Ambassador</button>
+            <button className=' px-2 w-60 rounded-md hover:bg-slate-500 hover:border-slate-500 ' onClick={() => this.block(this.state.decision, 'captain')}>Captain</button>
             </>
         }
         return (
-            <>
+            <div className='flex flex-col items-center justify-center mt-2'>
                 {control}
                 {pickClaim}
-            </>
+            </div>
         )
     }
 }

@@ -16,8 +16,8 @@ export default class BlockChallengeDecision extends Component {
     render() {
         return (
             <>
-                <p>{this.props.counterAction.source} is trying to block {this.props.prevAction}</p>
-                <button onClick={() => this.vote(true)}>Challenge</button>
+                <p className=' mt-2 font-bold'>{this.props.counterAction.source} is trying to block {this.props.prevAction.action} from {this.props.prevAction.source} as {this.props.counterAction.claim}</p>
+                <button className=' my-2 w-60 hover:bg-slate-500 hover:border-slate-500 rounded-md' onClick={() => this.vote(true)}>Challenge</button>
                 
             </>
         )
