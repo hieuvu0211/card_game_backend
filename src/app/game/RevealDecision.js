@@ -1,0 +1,43 @@
+import React, { Component} from "react";
+export default class RevealDecision extends Component {
+    constructor(props) {
+        super(props)
+        this.act = this.props.res.isBlock ? this.props.res.counterAction.counterAction : this.props.res.action.action
+        this.actionMap = {
+            tax: ["duke"],
+            assassinate: ["assassin"],
+            exchange: ["ambassador"],
+            steal: ["captain"],
+            block_foreign_aid: ["duke"],
+            block_steal: ["ambassador", "captain"],
+            block_assassinate: ["contessa"],
+        }
+    }
+        selectInfluence = (influence) => {
+            const res = {
+                revealedCard: influence,
+                prevAction: this.props.res.action,
+                counterAction: this.props.res.counterAction,
+                challengee: this.props.res.challengee,
+                challenger: this.props.res.challenger,
+                isBlock: this.props.res.isBlock
+            }
+            console.log(res)
+            this.props.socket.emit('game-revealDecision', res);
+            this.props.doneReveal();
+        }
+        render() {
+            const influences = this.props.influences.map((x, index) => {
+                return <button className=" mx-2 hover:bg-slate-500 hover:border-slate-500 rounded-md w-28" id={x} key={index} onClick={() => this.selectInfluence(x)}>{x}</button>
+            })
+            return (
+                <div>
+                    <p className=" font-bold my-2">Your <b>{this.act}</b> has been chanllenged! If you don't reveal {this.actionMap[this.act].join(' or ')} you'll lose influence!</p>
+                    <div className=" flex flex-row items-center justify-center">
+                    {influences}
+                    </div>
+
+                </div>
+            )
+        }
+    }
